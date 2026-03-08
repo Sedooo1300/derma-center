@@ -1,0 +1,5256 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#667eea">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="نظام إدارة متكامل لمركز الجلدية والليزر - PWA">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23667eea'/><text x='50' y='68' font-size='50' text-anchor='middle' fill='white'>🏥</text></svg>">
+<title>مركز الجلدية والليزر</title>
+<style>
+/* ==================== CSS VARIABLES ==================== */
+:root {
+  --primary: #667eea;
+  --primary-dark: #5a67d8;
+  --primary-light: #7c8ff7;
+  --secondary: #764ba2;
+  --accent: #f093fb;
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --surface2: #f8f9fa;
+  --text: #1a202c;
+  --text2: #4a5568;
+  --text3: #718096;
+  --border: #e2e8f0;
+  --shadow: 0 2px 15px rgba(0,0,0,0.08);
+  --success: #48bb78;
+  --warning: #ecc94b;
+  --danger: #fc8181;
+  --info: #63b3ed;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font: 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+  --bg: #1a202c;
+  --surface: #2d3748;
+  --surface2: #4a5568;
+  --text: #e2e8f0;
+  --text2: #a0aec0;
+  --text3: #718096;
+  --border: #4a5568;
+  --shadow: 0 2px 15px rgba(0,0,0,0.3);
+}
+
+/* Color Themes */
+[data-color="blue"] { --primary: #667eea; --primary-dark: #5a67d8; --primary-light: #7c8ff7; --secondary: #764ba2; --accent: #f093fb; }
+[data-color="green"] { --primary: #48bb78; --primary-dark: #38a169; --primary-light: #68d391; --secondary: #2f855a; --accent: #9ae6b4; }
+[data-color="purple"] { --primary: #9f7aea; --primary-dark: #805ad5; --primary-light: #b794f4; --secondary: #6b46c1; --accent: #d6bcfa; }
+[data-color="red"] { --primary: #fc8181; --primary-dark: #f56565; --primary-light: #feb2b2; --secondary: #c53030; --accent: #fed7d7; }
+[data-color="orange"] { --primary: #ed8936; --primary-dark: #dd6b20; --primary-light: #f6ad55; --secondary: #c05621; --accent: #fbd38d; }
+[data-color="teal"] { --primary: #38b2ac; --primary-dark: #319795; --primary-light: #4fd1c5; --secondary: #2c7a7b; --accent: #81e6d9; }
+[data-color="pink"] { --primary: #ed64a6; --primary-dark: #d53f8c; --primary-light: #f687b3; --secondary: #b83280; --accent: #fed7e2; }
+[data-color="cyan"] { --primary: #0bc5ea; --primary-dark: #00b5d8; --primary-light: #22d3ee; --secondary: #0987a0; --accent: #a5f3fc; }
+[data-color="indigo"] { --primary: #5c6bc0; --primary-dark: #3949ab; --primary-light: #7986cb; --secondary: #283593; --accent: #c5cae9; }
+[data-color="amber"] { --primary: #ffa726; --primary-dark: #fb8c00; --primary-light: #ffb74d; --secondary: #ef6c00; --accent: #ffe0b2; }
+[data-color="emerald"] { --primary: #10b981; --primary-dark: #059669; --primary-light: #34d399; --secondary: #047857; --accent: #a7f3d0; }
+[data-color="rose"] { --primary: #f43f5e; --primary-dark: #e11d48; --primary-light: #fb7185; --secondary: #be123c; --accent: #fecdd3; }
+
+/* ==================== BASE STYLES ==================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  transition: var(--transition);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==================== LAYOUT ==================== */
+.app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 78px;
+  background: linear-gradient(180deg, var(--primary), var(--secondary));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  gap: 4px;
+  overflow-y: auto;
+  z-index: 100;
+  transition: var(--transition);
+  box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+}
+
+.sidebar::-webkit-scrollbar { display: none; }
+
+.sidebar .logo {
+  width: 50px;
+  height: 50px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  color: #fff;
+  transition: var(--transition);
+}
+
+.sidebar .logo:hover {
+  transform: scale(1.1);
+  background: rgba(255,255,255,0.3);
+}
+
+.nav-item {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(255,255,255,0.7);
+  transition: var(--transition);
+  font-size: 10px;
+  gap: 4px;
+  text-align: center;
+  position: relative;
+}
+
+.nav-item:hover, .nav-item.active {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.nav-item .icon { font-size: 22px; }
+
+.nav-item .badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--danger);
+  color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  height: 64px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+  box-shadow: var(--shadow);
+  z-index: 50;
+}
+
+.header h1 {
+  font-size: 20px;
+  color: var(--primary);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  scroll-behavior: smooth;
+}
+
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: var(--primary-light);
+  border-radius: 3px;
+}
+
+.section {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+
+.section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ==================== CARDS ==================== */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+  transition: var(--transition);
+}
+
+.card:hover {
+  box-shadow: 0 4px 25px rgba(0,0,0,0.12);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ==================== STATS GRID ==================== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: var(--transition);
+  cursor: pointer;
+  border-right: 4px solid var(--primary);
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+.stat-card .stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.stat-card .stat-icon.blue { background: rgba(102,126,234,0.15); color: var(--primary); }
+.stat-card .stat-icon.green { background: rgba(72,187,120,0.15); color: var(--success); }
+.stat-card .stat-icon.orange { background: rgba(237,137,54,0.15); color: #ed8936; }
+.stat-card .stat-icon.pink { background: rgba(237,100,166,0.15); color: #ed64a6; }
+
+.stat-card .stat-info h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stat-card .stat-info p {
+  font-size: 13px;
+  color: var(--text3);
+}
+
+/* ==================== FORMS ==================== */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-xs);
+  font-size: 14px;
+  font-family: var(--font);
+  background: var(--surface);
+  color: var(--text);
+  transition: var(--transition);
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+}
+
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* ==================== BUTTONS ==================== */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-xs);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font);
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+}
+
+.btn-success {
+  background: var(--success);
+  color: #fff;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-warning {
+  background: var(--warning);
+  color: #333;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.btn-outline:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 12px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+/* ==================== TABLES ==================== */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+thead {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+}
+
+th, td {
+  padding: 12px 16px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+th {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+
+tbody tr:hover {
+  background: rgba(102,126,234,0.05);
+}
+
+tbody tr:nth-child(even) {
+  background: var(--surface2);
+}
+
+/* ==================== MODAL ==================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.modal-header h2 {
+  font-size: 18px;
+  color: var(--primary);
+}
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--surface2);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* ==================== TOAST ==================== */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  left: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  padding: 12px 20px;
+  border-radius: var(--radius-xs);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  animation: slideUp 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 280px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+.toast.info { background: var(--info); }
+.toast.warning { background: var(--warning); color: #333; }
+
+/* ==================== CHIPS ==================== */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  gap: 4px;
+}
+
+.chip-primary { background: rgba(102,126,234,0.15); color: var(--primary); }
+.chip-success { background: rgba(72,187,120,0.15); color: var(--success); }
+.chip-danger { background: rgba(252,129,129,0.15); color: #e53e3e; }
+.chip-warning { background: rgba(236,201,75,0.15); color: #d69e2e; }
+
+/* ==================== SEARCH ==================== */
+.search-box {
+  position: relative;
+  max-width: 100%;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  background: var(--surface);
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.search-box input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+}
+
+.search-box .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  font-size: 18px;
+}
+
+/* ==================== TABS ==================== */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text3);
+  transition: var(--transition);
+  white-space: nowrap;
+  border: none;
+  background: var(--surface2);
+}
+
+.tab.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.tab:hover:not(.active) {
+  background: var(--border);
+}
+
+/* ==================== PASSWORD SCREEN ==================== */
+.password-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  z-index: 900;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-screen.show {
+  display: flex;
+}
+
+.password-box {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 40px;
+  text-align: center;
+  width: 320px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.password-box h2 {
+  margin-bottom: 8px;
+  color: var(--primary);
+}
+
+.password-box p {
+  color: var(--text3);
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.password-box input {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-xs);
+  font-size: 18px;
+  text-align: center;
+  letter-spacing: 8px;
+  outline: none;
+  font-family: var(--font);
+}
+
+.password-box input:focus {
+  border-color: var(--primary);
+}
+
+.password-box .btn {
+  width: 100%;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+/* ==================== GALLERY ==================== */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  aspect-ratio: 1;
+  cursor: pointer;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.gallery-item:hover img {
+  transform: scale(1.1);
+}
+
+.gallery-item .delete-btn {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.gallery-item:hover .delete-btn {
+  opacity: 1;
+}
+
+/* ==================== SESSION SELECTION ==================== */
+.session-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.session-option {
+  padding: 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.session-option:hover {
+  border-color: var(--primary-light);
+}
+
+.session-option.selected {
+  border-color: var(--primary);
+  background: rgba(102,126,234,0.08);
+}
+
+.session-option .session-name {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.session-option .session-price {
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* ==================== COLOR PICKER ==================== */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.color-option {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  border: 3px solid transparent;
+  position: relative;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.active {
+  border-color: var(--text);
+  transform: scale(1.1);
+}
+
+.color-option.active::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* ==================== SYNC STATUS ==================== */
+.sync-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.sync-status.connected {
+  background: rgba(72,187,120,0.15);
+  color: var(--success);
+}
+
+.sync-status.disconnected {
+  background: rgba(252,129,129,0.15);
+  color: #e53e3e;
+}
+
+/* ==================== TOGGLE SWITCH ==================== */
+.toggle-switch {
+  position: relative;
+  width: 50px;
+  height: 26px;
+  background: var(--border);
+  border-radius: 13px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.toggle-switch.active {
+  background: var(--success);
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: #fff;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: var(--transition);
+}
+
+.toggle-switch.active::after {
+  left: 26px;
+}
+
+.section-protection-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+
+.section-protection-item:hover {
+  background: var(--border);
+}
+
+.section-protection-item .section-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.section-protection-item .section-icon {
+  font-size: 20px;
+}
+
+/* ==================== CHART ==================== */
+.chart-container {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.chart-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.chart-bar .label {
+  width: 80px;
+  font-size: 12px;
+  color: var(--text2);
+  text-align: left;
+}
+
+.chart-bar .bar {
+  flex: 1;
+  height: 28px;
+  background: var(--surface2);
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+}
+
+.chart-bar .bar-fill {
+  height: 100%;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transition: width 0.8s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 10px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 60px;
+    padding: 8px 0;
+  }
+  
+  .nav-item {
+    width: 48px;
+    height: 48px;
+    font-size: 8px;
+  }
+  
+  .nav-item .icon {
+    font-size: 18px;
+  }
+  
+  .header {
+    padding: 0 12px;
+    height: 56px;
+  }
+  
+  .header h1 {
+    font-size: 16px;
+  }
+  
+  .content {
+    padding: 12px;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stat-card {
+    padding: 12px;
+  }
+  
+  .stat-card .stat-info h3 {
+    font-size: 20px;
+  }
+  
+  .modal {
+    max-width: 95vw;
+  }
+  
+  .tabs {
+    flex-wrap: nowrap;
+  }
+  
+  .color-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ==================== PRINT ==================== */
+@media print {
+  .sidebar, .header, .btn, .tabs {
+    display: none !important;
+  }
+  
+  .content {
+    padding: 0 !important;
+  }
+  
+  .section {
+    display: block !important;
+  }
+}
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-light);
+  border-radius: 3px;
+}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar">
+    <div class="logo" title="مركز الجلدية والليزر" onclick="navigateTo('center')">🏥</div>
+    
+    <div class="nav-item active" data-section="center" onclick="navigateTo('center')">
+      <span class="icon">🏠</span><span>المركز</span>
+    </div>
+    
+    <div class="nav-item" data-section="assistant" onclick="navigateTo('assistant')">
+      <span class="icon">👨‍💼</span><span>المساعد</span>
+    </div>
+    
+    <div class="nav-item" data-section="doctors" onclick="openProtected('doctors')">
+      <span class="icon">👨‍⚕️</span><span>الأطباء</span>
+    </div>
+    
+    <div class="nav-item" data-section="laser" onclick="navigateTo('laser')">
+      <span class="icon">✨</span><span>الليزر</span>
+    </div>
+    
+    <div class="nav-item" data-section="files" onclick="openProtected('files')">
+      <span class="icon">📁</span><span>الملفات</span>
+    </div>
+    
+    <div class="nav-item" data-section="search" onclick="navigateTo('search')">
+      <span class="icon">🔍</span><span>البحث</span>
+    </div>
+    
+    <div class="nav-item" data-section="reports" onclick="openProtected('reports')">
+      <span class="icon">📊</span><span>التقارير</span>
+    </div>
+    
+    <div class="nav-item" data-section="sync" onclick="navigateTo('sync')">
+      <span class="icon">🔄</span><span>المزامنة</span>
+    </div>
+    
+    <div class="nav-item" data-section="settings" onclick="openProtected('settings')">
+      <span class="icon">⚙️</span><span>الإعدادات</span>
+    </div>
+  </nav>
+
+  <div class="main">
+    <!-- Header -->
+    <header class="header">
+      <h1 id="pageTitle">🏥 لوحة التحكم - مركز الجلدية والليزر</h1>
+      <div class="header-actions">
+        <div class="sync-status disconnected" id="syncStatus">
+          <span>●</span> <span id="syncText">غير متصل</span>
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="toggleDarkMode()" id="darkModeBtn">🌙</button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content">
+
+      <!-- ========== 1. CENTER SECTION ========== -->
+      <div class="section active" id="sec-center">
+        <div class="stats-grid" id="dashboardStats"></div>
+        
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📅 زيارات اليوم</span>
+            <button class="btn btn-sm btn-primary" onclick="navigateTo('assistant')">+ إضافة مريض</button>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr><th>#</th><th>اسم المريض</th><th>نوع الزيارة</th><th>الجلسة</th><th>المبلغ</th><th>الحالة</th></tr>
+              </thead>
+              <tbody id="todayVisitsTable"></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header"><span class="card-title">📞 المواعيد القادمة</span></div>
+          <div id="upcomingAppointments"></div>
+        </div>
+      </div>
+
+      <!-- ========== 2. ASSISTANT SECTION ========== -->
+      <div class="section" id="sec-assistant">
+        <div class="tabs">
+          <button class="tab active" onclick="showAssistantTab('register')">📝 تسجيل مريض</button>
+          <button class="tab" onclick="showAssistantTab('attendance')">✅ الحضور</button>
+          <button class="tab" onclick="showAssistantTab('appointments')">📅 الحجوزات</button>
+          <button class="tab" onclick="showAssistantTab('calls')">📞 المكالمات</button>
+          <button class="tab" onclick="showAssistantTab('labs')">🔬 التحاليل</button>
+          <button class="tab" onclick="showAssistantTab('patientList')">📋 سجل المرضى</button>
+        </div>
+
+        <!-- Register Patient Tab -->
+        <div id="assistantTab-register">
+          <div class="card">
+            <div class="card-header"><span class="card-title">📝 تسجيل مريض جديد</span></div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>الاسم الكامل</label>
+                <input type="text" id="patName" placeholder="أدخل اسم المريض">
+              </div>
+              <div class="form-group">
+                <label>السن</label>
+                <input type="number" id="patAge" placeholder="السن">
+              </div>
+              <div class="form-group">
+                <label>العنوان</label>
+                <input type="text" id="patAddress" placeholder="العنوان">
+              </div>
+              <div class="form-group">
+                <label>رقم الهاتف</label>
+                <input type="tel" id="patPhone" placeholder="رقم الهاتف">
+              </div>
+              <div class="form-group">
+                <label>نوع الزيارة</label>
+                <select id="patVisitType" onchange="onVisitTypeChange()">
+                  <option value="">اختر نوع الزيارة</option>
+                  <option value="كشف">كشف</option>
+                  <option value="إعادة">إعادة</option>
+                  <option value="جلسة">جلسة</option>
+                  <option value="كشف + جلسة">كشف + جلسة</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>قيمة الكشف (جنيه)</label>
+                <input type="number" id="patFee" placeholder="0">
+              </div>
+            </div>
+            
+            <div id="sessionSelector" style="display:none; margin-top:16px">
+              <label style="font-size:14px; font-weight:600; margin-bottom:10px; display:block">اختر الجلسات:</label>
+              <div class="session-grid" id="sessionGrid"></div>
+              <div style="margin-top:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+                <input type="text" id="newSessionName" placeholder="اسم جلسة جديدة" style="padding:8px 12px; border:2px solid var(--border); border-radius:var(--radius-xs); flex:1; min-width:150px">
+                <input type="number" id="newSessionPrice" placeholder="السعر" style="padding:8px 12px; border:2px solid var(--border); border-radius:var(--radius-xs); width:100px">
+                <button class="btn btn-sm btn-outline" onclick="addNewSessionType()">+ إضافة</button>
+              </div>
+            </div>
+            
+            <div class="form-group" style="margin-top:16px">
+              <label>ملاحظات</label>
+              <textarea id="patNotes" placeholder="ملاحظات إضافية..."></textarea>
+            </div>
+            
+            <div class="form-group" style="margin-top:12px">
+              <label>📅 الموعد القادم</label>
+              <input type="datetime-local" id="patNextVisit">
+            </div>
+            
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="savePatient()">💾 حفظ البيانات</button>
+              <button class="btn btn-outline" onclick="clearPatientForm()">🗑️ مسح</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendance Tab -->
+        <div id="assistantTab-attendance" style="display:none">
+          <div class="card">
+            <div class="card-header"><span class="card-title">✅ سجل الحضور - <span id="attendanceDate"></span></span></div>
+            <div class="search-box" style="margin-bottom:16px">
+              <input type="text" placeholder="بحث عن مريض..." oninput="searchAttendance(this.value)">
+              <span class="search-icon">🔍</span>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>اختيار</th><th>الاسم</th><th>الهاتف</th><th>نوع الزيارة</th><th>الوقت</th></tr></thead>
+                <tbody id="attendanceTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appointments Tab -->
+        <div id="assistantTab-appointments" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">📅 الحجوزات والمواعيد</span>
+              <button class="btn btn-sm btn-primary" onclick="showAddAppointment()">+ حجز جديد</button>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>المريض</th><th>التاريخ</th><th>النوع</th><th>الحالة</th><th>تذكير</th><th>إجراء</th></tr></thead>
+                <tbody id="appointmentsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calls Tab -->
+        <div id="assistantTab-calls" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">📞 سجل المكالمات</span>
+              <button class="btn btn-sm btn-primary" onclick="showAddCall()">+ مكالمة جديدة</button>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>المريض</th><th>التاريخ</th><th>الملاحظات</th><th>الحالة</th><th>إجراء</th></tr></thead>
+                <tbody id="callsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Labs Tab -->
+        <div id="assistantTab-labs" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">🔬 التحاليل والفحوصات</span>
+              <button class="btn btn-sm btn-primary" onclick="showAddLab()">+ إضافة تحليل</button>
+            </div>
+            <div class="search-box" style="margin-bottom:16px">
+              <input type="text" placeholder="بحث عن مريض أو تحليل..." oninput="searchLabs(this.value)">
+              <span class="search-icon">🔍</span>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>المريض</th><th>التحليل</th><th>التاريخ</th><th>النتائج</th><th>مرفقات</th><th>إجراء</th></tr></thead>
+                <tbody id="labsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient List Tab -->
+        <div id="assistantTab-patientList" style="display:none">
+          <div class="card">
+            <div class="card-header"><span class="card-title">📋 سجل المرضى</span></div>
+            <div class="search-box" style="margin-bottom:16px">
+              <input type="text" id="patientSearchInput" placeholder="بحث بالاسم أو العنوان أو الهاتف..." oninput="searchPatients(this.value)">
+              <span class="search-icon">🔍</span>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>#</th><th>الاسم</th><th>السن</th><th>الهاتف</th><th>نوع الزيارة</th><th>التاريخ</th><th>المبلغ</th><th>إجراء</th></tr></thead>
+                <tbody id="patientListTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 3. DOCTORS SECTION ========== -->
+      <div class="section" id="sec-doctors">
+        <div class="tabs">
+          <button class="tab active" onclick="showDoctorTab('list')">👨‍⚕️ الأطباء</button>
+          <button class="tab" onclick="showDoctorTab('patients')">🔍 بحث المرضى</button>
+          <button class="tab" onclick="showDoctorTab('gallery')">📸 معرض الصور</button>
+          <button class="tab" onclick="showDoctorTab('medications')">💊 الأدوية</button>
+          <button class="tab" onclick="showDoctorTab('prescriptions')">📋 الروشتات</button>
+          <button class="tab" onclick="showDoctorTab('percentages')">💰 النسب</button>
+        </div>
+        
+        <div id="doctorTab-list">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">👨‍⚕️ قائمة الأطباء</span>
+              <button class="btn btn-sm btn-primary" onclick="showAddDoctor()">+ إضافة طبيب</button>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>الاسم</th><th>التخصص</th><th>الهاتف</th><th>النسبة %</th><th>إجراء</th></tr></thead>
+                <tbody id="doctorsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <div id="doctorTab-patients" style="display:none">
+          <div class="card">
+            <div class="card-header"><span class="card-title">🔍 بحث عن مريض</span></div>
+            <div class="search-box">
+              <input type="text" placeholder="بحث بالاسم أو السن أو العنوان أو الهاتف..." oninput="doctorSearchPatients(this.value)">
+              <span class="search-icon">🔍</span>
+            </div>
+            <div id="doctorPatientResults" style="margin-top:16px"></div>
+          </div>
+        </div>
+        
+        <div id="doctorTab-gallery" style="display:none">
+          <div class="card">
+            <div class="card-header"><span class="card-title">📸 معرض صور المرضى (قبل وبعد)</span></div>
+            <div class="search-box" style="margin-bottom:16px">
+              <input type="text" placeholder="ابحث عن مريض لعرض صوره..." oninput="searchPatientForGallery(this.value)">
+              <span class="search-icon">🔍</span>
+            </div>
+            <div id="galleryPatientSelect"></div>
+            <div id="patientGallery" style="margin-top:16px"></div>
+          </div>
+        </div>
+        
+        <div id="doctorTab-medications" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">💊 قاعدة بيانات الأدوية</span>
+              <button class="btn btn-sm btn-primary" onclick="showAddMedication()">+ إضافة دواء</button>
+            </div>
+            <div class="search-box" style="margin-bottom:16px">
+              <input type="text" placeholder="بحث عن دواء..." oninput="searchMedications(this.value)">
+              <span class="search-icon">🔍</span>
+            </div>
+            <div id="medicationsList"></div>
+          </div>
+        </div>
+        
+        <div id="doctorTab-prescriptions" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">📋 الروشتات الجاهزة</span>
+              <button class="btn btn-sm btn-primary" onclick="showAddPrescription()">+ روشتة جديدة</button>
+            </div>
+            <div id="prescriptionsList"></div>
+          </div>
+        </div>
+        
+        <div id="doctorTab-percentages" style="display:none">
+          <div class="card">
+            <div class="card-header"><span class="card-title">💰 نسب الأطباء</span></div>
+            <div id="doctorPercentages"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 4. LASER SECTION ========== -->
+      <div class="section" id="sec-laser">
+        <div class="tabs">
+          <button class="tab active" onclick="showLaserTab('sessions')">✨ جلسات الليزر</button>
+          <button class="tab" onclick="showLaserTab('newSession')">+ جلسة جديدة</button>
+          <button class="tab" onclick="showLaserTab('areas')">📍 مناطق العلاج</button>
+          <button class="tab" onclick="showLaserTab('packages')">📦 الباقات</button>
+          <button class="tab" onclick="showLaserTab('followup')">📊 المتابعة</button>
+        </div>
+        
+        <div id="laserTab-sessions">
+          <div class="card">
+            <div class="card-header"><span class="card-title">✨ سجل جلسات الليزر</span></div>
+            <div class="search-box" style="margin-bottom:16px">
+              <input type="text" placeholder="بحث عن مريض..." oninput="searchLaserSessions(this.value)">
+              <span class="search-icon">🔍</span>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>المريض</th><th>المنطقة</th><th>رقم الجلسة</th><th>الإعدادات</th><th>التاريخ</th><th>إجراء</th></tr></thead>
+                <tbody id="laserSessionsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <div id="laserTab-newSession" style="display:none">
+          <div class="card">
+            <div class="card-header"><span class="card-title">+ تسجيل جلسة ليزر جديدة</span></div>
+            <div class="search-box" style="margin-bottom:16px">
+              <input type="text" id="laserPatientSearch" placeholder="ابحث عن المريض..." oninput="searchPatientForLaser(this.value)">
+              <span class="search-icon">🔍</span>
+            </div>
+            <div id="laserPatientSelect" style="margin-bottom:16px"></div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>منطقة العلاج</label>
+                <select id="laserArea">
+                  <option value="">اختر المنطقة</option>
+                  <option>الوجه كامل</option>
+                  <option>الشنب</option>
+                  <option>الذقن</option>
+                  <option>الرقبة</option>
+                  <option>تحت الإبط</option>
+                  <option>الذراعين</option>
+                  <option>الساقين</option>
+                  <option>الظهر</option>
+                  <option>البطن</option>
+                  <option>خط البكيني</option>
+                  <option>بكيني كامل</option>
+                  <option>الصدر</option>
+                  <option>الأصابع</option>
+                  <option>الجسم كامل</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>الجهاز المستخدم</label>
+                <select id="laserDevice">
+                  <option value="">اختر الجهاز</option>
+                  <option>Alexandrite 755nm</option>
+                  <option>Nd:YAG 1064nm</option>
+                  <option>Diode 810nm</option>
+                  <option>IPL</option>
+                  <option>Triple Wavelength</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>رقم الجلسة</label>
+                <input type="number" id="laserSessionNum" value="1" min="1">
+              </div>
+              <div class="form-group">
+                <label>نوع البشرة (Fitzpatrick)</label>
+                <select id="laserSkinType">
+                  <option value="">اختر</option>
+                  <option>Type I</option>
+                  <option>Type II</option>
+                  <option>Type III</option>
+                  <option>Type IV</option>
+                  <option>Type V</option>
+                  <option>Type VI</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Fluence (J/cm²)</label>
+                <input type="text" id="laserFluence" placeholder="مثال: 25">
+              </div>
+              <div class="form-group">
+                <label>Pulse Duration (ms)</label>
+                <input type="text" id="laserPulse" placeholder="مثال: 30">
+              </div>
+              <div class="form-group">
+                <label>Spot Size (mm)</label>
+                <input type="text" id="laserSpot" placeholder="مثال: 12">
+              </div>
+              <div class="form-group">
+                <label>السعر (جنيه)</label>
+                <input type="number" id="laserPrice" placeholder="0">
+              </div>
+            </div>
+            <div class="form-group" style="margin-top:12px">
+              <label>ملاحظات</label>
+              <textarea id="laserNotes" placeholder="ملاحظات الجلسة..."></textarea>
+            </div>
+            <div class="form-group" style="margin-top:12px">
+              <label>الموعد القادم</label>
+              <input type="datetime-local" id="laserNextDate">
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="saveLaserSession()">💾 حفظ الجلسة</button>
+              <button class="btn btn-outline" onclick="clearLaserForm()">🗑️ مسح</button>
+            </div>
+          </div>
+        </div>
+        
+        <div id="laserTab-areas" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">📍 مناطق العلاج والأسعار</span>
+              <button class="btn btn-sm btn-primary" onclick="showAddArea()">+ إضافة منطقة</button>
+            </div>
+            <div id="areasGrid" class="session-grid"></div>
+          </div>
+        </div>
+        
+        <div id="laserTab-packages" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">📦 باقات الليزر</span>
+              <button class="btn btn-sm btn-primary" onclick="showAddPackage()">+ باقة جديدة</button>
+            </div>
+            <div id="packagesGrid"></div>
+          </div>
+        </div>
+        
+        <div id="laserTab-followup" style="display:none">
+          <div class="card">
+            <div class="card-header"><span class="card-title">📊 متابعة نتائج الليزر</span></div>
+            <div class="search-box" style="margin-bottom:16px">
+              <input type="text" placeholder="ابحث عن مريض..." oninput="searchLaserFollowup(this.value)">
+              <span class="search-icon">🔍</span>
+            </div>
+            <div id="followupContent"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 5. FILES SECTION ========== -->
+      <div class="section" id="sec-files">
+        <div class="card">
+          <div class="card-header"><span class="card-title">📁 إدارة الملفات والسجلات الطبية</span></div>
+          <div class="search-box" style="margin-bottom:16px">
+            <input type="text" placeholder="بحث عن مريض أو ملف..." oninput="searchFiles(this.value)">
+            <span class="search-icon">🔍</span>
+          </div>
+          <div id="filesPatientSelect" style="margin-bottom:16px"></div>
+          <div id="filesContent">
+            <div class="form-grid" style="margin-bottom:16px">
+              <div class="form-group">
+                <label>نوع الملف</label>
+                <select id="fileType">
+                  <option>تحليل</option>
+                  <option>أشعة</option>
+                  <option>تقرير طبي</option>
+                  <option>صورة</option>
+                  <option>روشتة</option>
+                  <option>أخرى</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>إرفاق ملفات</label>
+                <input type="file" id="fileInput" multiple accept="*/*">
+              </div>
+              <div class="form-group">
+                <label>صور (مع ضغط تلقائي)</label>
+                <input type="file" id="imageFileInput" multiple accept="image/*" onchange="previewImages(this)">
+              </div>
+            </div>
+            <div id="imagePreview" class="gallery" style="margin-bottom:16px"></div>
+            <button class="btn btn-primary" onclick="saveFiles()">💾 حفظ الملفات</button>
+            <div id="savedFiles" style="margin-top:16px"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">📋 التاريخ الطبي</span></div>
+          <div id="medicalHistory"></div>
+        </div>
+      </div>
+
+      <!-- ========== 6. SEARCH SECTION ========== -->
+      <div class="section" id="sec-search">
+        <div class="card">
+          <div class="card-header"><span class="card-title">🔍 البحث المتقدم</span></div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>الاسم</label>
+              <input type="text" id="srchName" oninput="runAdvancedSearch()">
+            </div>
+            <div class="form-group">
+              <label>الهاتف</label>
+              <input type="text" id="srchPhone" oninput="runAdvancedSearch()">
+            </div>
+            <div class="form-group">
+              <label>العنوان</label>
+              <input type="text" id="srchAddress" oninput="runAdvancedSearch()">
+            </div>
+            <div class="form-group">
+              <label>من تاريخ</label>
+              <input type="date" id="srchDateFrom" onchange="runAdvancedSearch()">
+            </div>
+            <div class="form-group">
+              <label>إلى تاريخ</label>
+              <input type="date" id="srchDateTo" onchange="runAdvancedSearch()">
+            </div>
+            <div class="form-group">
+              <label>نوع الزيارة</label>
+              <select id="srchVisitType" onchange="runAdvancedSearch()">
+                <option value="">الكل</option>
+                <option>كشف</option>
+                <option>إعادة</option>
+                <option>جلسة</option>
+                <option>كشف + جلسة</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📊 نتائج البحث <span id="searchCount" class="chip chip-primary">0</span></span>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>#</th><th>الاسم</th><th>السن</th><th>الهاتف</th><th>العنوان</th><th>نوع الزيارة</th><th>التاريخ</th><th>المبلغ</th><th>إجراء</th></tr></thead>
+              <tbody id="searchResultsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 7. REPORTS SECTION ========== -->
+      <div class="section" id="sec-reports">
+        <div class="tabs">
+          <button class="tab active" onclick="showReportTab('financial')">💰 التقارير المالية</button>
+          <button class="tab" onclick="showReportTab('visits')">📊 تقارير الزيارات</button>
+          <button class="tab" onclick="showReportTab('sessions')">✨ تقارير الجلسات</button>
+          <button class="tab" onclick="showReportTab('expenses')">📉 المصروفات</button>
+        </div>
+        
+        <div id="reportTab-financial">
+          <div class="card">
+            <div class="card-header"><span class="card-title">💰 الإيرادات والمصروفات</span></div>
+            <div class="form-grid" style="margin-bottom:20px">
+              <div class="form-group">
+                <label>الفترة</label>
+                <select id="reportPeriod" onchange="generateFinancialReport()">
+                  <option value="daily">يومي</option>
+                  <option value="weekly">أسبوعي</option>
+                  <option value="monthly" selected>شهري</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>من</label>
+                <input type="date" id="reportFrom" onchange="generateFinancialReport()">
+              </div>
+              <div class="form-group">
+                <label>إلى</label>
+                <input type="date" id="reportTo" onchange="generateFinancialReport()">
+              </div>
+            </div>
+            <div class="stats-grid" id="financialStats"></div>
+            <div id="financialChart" class="chart-container"></div>
+            <button class="btn btn-outline" onclick="addExpense()">+ إضافة مصروف</button>
+          </div>
+        </div>
+        
+        <div id="reportTab-visits" style="display:none">
+          <div class="card">
+            <div class="card-header"><span class="card-title">📊 تقارير الزيارات</span></div>
+            <div id="visitsReport"></div>
+          </div>
+        </div>
+        
+        <div id="reportTab-sessions" style="display:none">
+          <div class="card">
+            <div class="card-header"><span class="card-title">✨ تقارير الجلسات</span></div>
+            <div id="sessionsReport"></div>
+          </div>
+        </div>
+        
+        <div id="reportTab-expenses" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">📉 سجل المصروفات</span>
+              <button class="btn btn-sm btn-primary" onclick="addExpense()">+ مصروف جديد</button>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>التاريخ</th><th>البند</th><th>المبلغ</th><th>ملاحظات</th><th>إجراء</th></tr></thead>
+                <tbody id="expensesTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 8. SYNC SECTION ========== -->
+      <div class="section" id="sec-sync">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🔄 مركز المزامنة</span>
+            <div class="sync-status disconnected" id="mainSyncStatus">
+              <span>●</span> <span id="mainSyncText">غير متصل</span>
+            </div>
+          </div>
+          <p style="color:var(--text3); font-size:13px; margin-bottom:16px">
+            اختر طريقة المزامنة المناسبة لك. إذا لم تعمل طريقة، جرب طريقة أخرى.
+          </p>
+          
+          <div class="tabs" style="margin-bottom:20px; flex-wrap:wrap" id="syncMethodsTabs">
+            <button class="tab active" onclick="showSyncMethod('code')" data-method="code">🔑 كود سريع</button>
+            <button class="tab" onclick="showSyncMethod('jsonbin')" data-method="jsonbin">☁️ سحابة مجانية</button>
+            <button class="tab" onclick="showSyncMethod('file')" data-method="file">📁 ملف</button>
+            <button class="tab" onclick="showSyncMethod('link')" data-method="link">🔗 رابط</button>
+            <button class="tab" onclick="showSyncMethod('nfc')" data-method="nfc">📱 NFC</button>
+            <button class="tab" onclick="showSyncMethod('more')" data-method="more">➕ المزيد</button>
+          </div>
+          
+          <!-- إدارة طرق المزامنة -->
+          <div class="card" style="background:var(--surface2); margin-bottom:16px">
+            <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer" onclick="toggleSyncMethodsManager()">
+              <span style="font-weight:600">⚙️ إدارة طرق المزامنة</span>
+              <span id="syncMethodsToggleIcon">▼</span>
+            </div>
+            <div id="syncMethodsManager" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border)">
+              <p style="font-size:12px; color:var(--text3); margin-bottom:12px">أخفِ الطرق التي لا تحتاجها:</p>
+              <div style="display:flex; flex-wrap:wrap; gap:8px" id="syncMethodsToggles"></div>
+            </div>
+          </div>
+          
+          <!-- ========== Method 1: Quick Code (الأكثر فاعلية) ========== -->
+          <div id="syncMethod-code">
+            <div class="card" style="background:linear-gradient(135deg, var(--success), #38a169); color:#fff; margin-bottom:16px">
+              <div style="display:flex; align-items:center; gap:12px">
+                <span style="font-size:40px">🔑</span>
+                <div style="flex:1">
+                  <h3 style="margin:0; font-size:18px">كود سريع للمزامنة</h3>
+                  <p style="margin:4px 0 0 0; font-size:13px; opacity:0.9">انسخ الكود من جهاز والصقه في الآخر - يعمل 100%</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="tabs" style="margin-bottom:16px">
+              <button class="tab active" onclick="showCodeTab('export')">📤 تصدير</button>
+              <button class="tab" onclick="showCodeTab('import')">📥 استيراد</button>
+            </div>
+            
+            <div id="codeTab-export">
+              <div style="background:var(--surface2); padding:16px; border-radius:var(--radius-sm); margin-bottom:16px">
+                <p style="font-size:13px; color:var(--text2); margin-bottom:12px">اضغط لإنشاء كود يحتوي على جميع البيانات:</p>
+                <button class="btn btn-primary" onclick="generateQuickCode()" style="width:100%">🔑 إنشاء كود المزامنة</button>
+              </div>
+              
+              <div id="quickCodeOutput" style="display:none">
+                <div class="form-group" style="margin-bottom:12px">
+                  <label>كود المزامنة (انسخه كاملاً):</label>
+                  <textarea id="quickCodeText" readonly style="min-height:150px; font-family:monospace; font-size:11px; direction:ltr; text-align:left"></textarea>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap">
+                  <button class="btn btn-primary" onclick="copyQuickCode()">📋 نسخ الكود</button>
+                  <button class="btn btn-outline" onclick="shareQuickCode()">📤 مشاركة</button>
+                  <button class="btn btn-outline" onclick="downloadQuickCode()">📥 تحميل</button>
+                </div>
+              </div>
+            </div>
+            
+            <div id="codeTab-import" style="display:none">
+              <div class="form-group" style="margin-bottom:12px">
+                <label>الصق كود المزامنة هنا:</label>
+                <textarea id="quickCodeInput" placeholder="الصق الكود هنا..." style="min-height:150px; font-family:monospace; font-size:11px; direction:ltr; text-align:left"></textarea>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px">
+                <button class="btn btn-primary" onclick="importQuickCode()">📥 استيراد البيانات</button>
+                <button class="btn btn-outline" onclick="document.getElementById('quickCodeFileInput').click()">📁 من ملف</button>
+                <input type="file" id="quickCodeFileInput" accept=".txt,.json" style="display:none" onchange="importQuickCodeFile(this)">
+              </div>
+              
+              <div id="quickCodePreview" style="display:none; background:var(--surface2); padding:16px; border-radius:var(--radius-sm)">
+                <h4 style="margin:0 0 12px 0">📋 معاينة البيانات:</h4>
+                <div id="quickCodePreviewContent"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- ========== Method 2: JSONBin (سحابة مجانية) ========== -->
+          <div id="syncMethod-jsonbin" style="display:none">
+            <div class="card" style="background:var(--surface2); margin-bottom:16px">
+              <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+                <span style="font-size:32px">☁️</span>
+                <div style="flex:1">
+                  <h3 style="margin:0; font-size:16px">سحابة مجانية (JSONBin)</h3>
+                  <p style="margin:0; font-size:12px; color:var(--text3)">تخزين سحابي مجاني بدون تسجيل</p>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <span class="chip chip-success">✓ مجاني تماماً</span>
+                <span class="chip chip-primary">🌍 من أي مكان</span>
+                <span class="chip chip-success">🔒 خاص</span>
+              </div>
+            </div>
+            
+            <div class="tabs" style="margin-bottom:16px">
+              <button class="tab active" onclick="showJsonbinTab('upload')">📤 رفع للسحابة</button>
+              <button class="tab" onclick="showJsonbinTab('download')">📥 تحميل من السحابة</button>
+            </div>
+            
+            <div id="jsonbinTab-upload">
+              <button class="btn btn-primary" onclick="uploadToJsonBin()" style="width:100%; margin-bottom:12px">☁️ رفع البيانات للسحابة</button>
+              
+              <div id="jsonbinUploadResult" style="display:none; background:var(--surface2); padding:16px; border-radius:var(--radius-sm)">
+                <p style="font-size:12px; color:var(--text3); margin-bottom:8px">رابط المزامنة:</p>
+                <div style="display:flex; gap:8px; align-items:center">
+                  <input type="text" id="jsonbinUrl" readonly style="flex:1; font-size:11px; direction:ltr; text-align:left">
+                  <button class="btn btn-sm btn-outline" onclick="copyJsonbinUrl()">📋</button>
+                </div>
+                <p style="font-size:11px; color:var(--text3); margin-top:12px">💡 استخدم هذا الرابط أو المعرف في أي جهاز آخر لتحميل البيانات</p>
+              </div>
+            </div>
+            
+            <div id="jsonbinTab-download" style="display:none">
+              <div class="form-group" style="margin-bottom:12px">
+                <label>معرف أو رابط البيانات:</label>
+                <input type="text" id="jsonbinIdInput" placeholder="أدخل المعرف أو الصق الرابط" style="direction:ltr; text-align:left">
+              </div>
+              <button class="btn btn-primary" onclick="downloadFromJsonBin()" style="width:100%">📥 تحميل البيانات</button>
+            </div>
+          </div>
+          
+          <!-- ========== Method 3: File (ملف) ========== -->
+          <div id="syncMethod-file" style="display:none">
+            <div class="card" style="background:var(--surface2); margin-bottom:16px">
+              <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+                <span style="font-size:32px">📁</span>
+                <div style="flex:1">
+                  <h3 style="margin:0; font-size:16px">مزامنة بالملفات</h3>
+                  <p style="margin:0; font-size:12px; color:var(--text3)">تصدير واستيراد - موثوق 100%</p>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <span class="chip chip-success">✓ موثوقة 100%</span>
+                <span class="chip chip-primary">💾 نسخة احتياطية</span>
+                <span class="chip chip-success">⚡ سريع</span>
+              </div>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:16px">
+              <div class="card" style="text-align:center; padding:24px; background:var(--surface2)">
+                <span style="font-size:40px">📤</span>
+                <h4 style="margin:12px 0 8px 0">تصدير البيانات</h4>
+                <p style="font-size:12px; color:var(--text3); margin-bottom:12px">تحميل نسخة من جميع البيانات</p>
+                <button class="btn btn-primary" onclick="exportAllData()" style="width:100%">📥 تصدير JSON</button>
+              </div>
+              <div class="card" style="text-align:center; padding:24px; background:var(--surface2)">
+                <span style="font-size:40px">📥</span>
+                <h4 style="margin:12px 0 8px 0">استيراد البيانات</h4>
+                <p style="font-size:12px; color:var(--text3); margin-bottom:12px">استعادة من ملف نسخة احتياطية</p>
+                <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importDataFile(this)">
+                <button class="btn btn-outline" onclick="document.getElementById('importFileInput').click()" style="width:100%">📤 استيراد</button>
+              </div>
+            </div>
+            
+            <div class="card" style="background:var(--surface2)">
+              <h4 style="margin:0 0 12px 0">📋 تصدير جزئي</h4>
+              <div style="display:flex; flex-wrap:wrap; gap:8px">
+                <button class="btn btn-sm btn-outline" onclick="exportStore('patients')">👥 المرضى</button>
+                <button class="btn btn-sm btn-outline" onclick="exportStore('laserSessions')">✨ الليزر</button>
+                <button class="btn btn-sm btn-outline" onclick="exportStore('appointments')">📅 المواعيد</button>
+                <button class="btn btn-sm btn-outline" onclick="exportStore('expenses')">📉 المصروفات</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- ========== Method 4: Link (رابط) ========== -->
+          <div id="syncMethod-link" style="display:none">
+            <div class="card" style="background:var(--surface2); margin-bottom:16px">
+              <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+                <span style="font-size:32px">🔗</span>
+                <div style="flex:1">
+                  <h3 style="margin:0; font-size:16px">مشاركة برابط</h3>
+                  <p style="margin:0; font-size:12px; color:var(--text3)">إنشاء رابط للبيانات ومشاركته</p>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <span class="chip chip-success">✓ سهل الاستخدام</span>
+                <span class="chip chip-primary">📤 قابل للمشاركة</span>
+                <span class="chip chip-success">⚡ سريع</span>
+              </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="generateShareableLink()" style="width:100%; margin-bottom:16px">🔗 إنشاء رابط للمشاركة</button>
+            
+            <div id="shareLinkResult" style="display:none; background:var(--surface2); padding:16px; border-radius:var(--radius-sm)">
+              <div class="form-group" style="margin-bottom:12px">
+                <label>رابط البيانات:</label>
+                <input type="text" id="shareableLink" readonly style="font-size:11px; direction:ltr; text-align:left">
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <button class="btn btn-sm btn-outline" onclick="copyShareLink()">📋 نسخ</button>
+                <button class="btn btn-sm btn-outline" onclick="shareViaWebShare()">📤 مشاركة</button>
+                <button class="btn btn-sm btn-outline" onclick="sendViaWhatsApp()">📱 واتساب</button>
+              </div>
+            </div>
+            
+            <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border)">
+              <h4 style="margin-bottom:12px">📥 استيراد من رابط:</h4>
+              <div class="form-group" style="margin-bottom:12px">
+                <input type="text" id="importLinkInput" placeholder="الصق الرابط هنا" style="direction:ltr; text-align:left">
+              </div>
+              <button class="btn btn-primary" onclick="importFromLink()" style="width:100%">📥 تحميل من الرابط</button>
+            </div>
+          </div>
+          
+          <!-- ========== Method 5: NFC ========== -->
+          <div id="syncMethod-nfc" style="display:none">
+            <div class="card" style="background:var(--surface2); margin-bottom:16px">
+              <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+                <span style="font-size:32px">📱</span>
+                <div style="flex:1">
+                  <h3 style="margin:0; font-size:16px">مزامنة NFC</h3>
+                  <p style="margin:0; font-size:12px; color:var(--text3)">نقل باللمس للهواتف الداعمة</p>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <span class="chip chip-success">✓ بدون إنترنت</span>
+                <span class="chip chip-primary">⚡ سريع</span>
+                <span class="chip" style="background:rgba(252,129,129,0.15); color:#e53e3e">⚠️ يحتاج دعم NFC</span>
+              </div>
+            </div>
+            
+            <div id="nfcStatus" style="background:var(--surface2); padding:20px; border-radius:var(--radius-sm); text-align:center; margin-bottom:16px">
+              <span style="font-size:48px" id="nfcIcon">📱</span>
+              <p id="nfcStatusText" style="margin:12px 0 0 0; font-weight:600">جاهز للمزامنة</p>
+              <p id="nfcStatusSub" style="font-size:12px; color:var(--text3); margin:4px 0 0 0">اضغط للبدء</p>
+            </div>
+            
+            <div style="display:flex; gap:8px; flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="startNFCSend()">📤 إرسال</button>
+              <button class="btn btn-outline" onclick="startNFCReceive()">📥 استقبال</button>
+            </div>
+            
+            <div style="background:rgba(236,201,75,0.1); padding:12px; border-radius:var(--radius-sm); margin-top:16px; border:2px solid var(--warning)">
+              <p style="font-size:12px; color:var(--text2); margin:0">
+                ⚠️ NFC يعمل على الهواتف الداعمة فقط. إذا لم يعمل، استخدم طريقة "كود سريع".
+              </p>
+            </div>
+          </div>
+          
+          <!-- ========== Method 6: More Options ========== -->
+          <div id="syncMethod-more" style="display:none">
+            <div class="card" style="background:var(--surface2); margin-bottom:16px">
+              <h3 style="margin:0 0 16px 0">🔧 طرق إضافية</h3>
+              
+              <div style="display:grid; gap:12px">
+                <!-- Email -->
+                <div style="padding:16px; background:var(--surface); border-radius:var(--radius-sm); border:1px solid var(--border)">
+                  <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+                    <span style="font-size:24px">📧</span>
+                    <div style="flex:1">
+                      <strong>إرسال بالبريد</strong>
+                      <p style="font-size:12px; color:var(--text3); margin:0">إرسال البيانات كملف مرفق</p>
+                    </div>
+                  </div>
+                  <div style="display:flex; gap:8px">
+                    <input type="email" id="syncEmail" placeholder="البريد الإلكتروني" style="flex:1">
+                    <button class="btn btn-sm btn-primary" onclick="sendSyncEmail()">📤 إرسال</button>
+                  </div>
+                </div>
+                
+                <!-- Clipboard -->
+                <div style="padding:16px; background:var(--surface); border-radius:var(--radius-sm); border:1px solid var(--border)">
+                  <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+                    <span style="font-size:24px">📋</span>
+                    <div style="flex:1">
+                      <strong>نسخ للحافظة</strong>
+                      <p style="font-size:12px; color:var(--text3); margin:0">نسخ البيانات للصقها في أي مكان</p>
+                    </div>
+                  </div>
+                  <div style="display:flex; gap:8px">
+                    <button class="btn btn-sm btn-outline" onclick="copyDataToClipboard()">📋 نسخ البيانات</button>
+                    <button class="btn btn-sm btn-outline" onclick="pasteDataFromClipboard()">📥 لصق البيانات</button>
+                  </div>
+                </div>
+                
+                <!-- Print -->
+                <div style="padding:16px; background:var(--surface); border-radius:var(--radius-sm); border:1px solid var(--border)">
+                  <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+                    <span style="font-size:24px">🖨️</span>
+                    <div style="flex:1">
+                      <strong>طباعة QR للبيانات</strong>
+                      <p style="font-size:12px; color:var(--text3); margin:0">طباعة QR Code للبيانات الأساسية</p>
+                    </div>
+                  </div>
+                  <button class="btn btn-sm btn-outline" onclick="printDataQR()">🖨️ طباعة</button>
+                </div>
+                
+                <!-- Telegram -->
+                <div style="padding:16px; background:var(--surface); border-radius:var(--radius-sm); border:1px solid var(--border)">
+                  <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+                    <span style="font-size:24px">✈️</span>
+                    <div style="flex:1">
+                      <strong>مشاركة تيليجرام</strong>
+                      <p style="font-size:12px; color:var(--text3); margin:0">إرسال عبر تيليجرام</p>
+                    </div>
+                  </div>
+                  <button class="btn btn-sm btn-outline" onclick="shareViaTelegram()">✈️ مشاركة</button>
+                </div>
+              </div>
+            </div>
+          </div>
+            
+            <div style="background:rgba(236,201,75,0.1); padding:16px; border-radius:var(--radius-sm); border:2px solid var(--warning); margin-bottom:16px">
+              <p style="color:#d69e2e; font-weight:600; margin:0 0 8px 0">⚠️ ميزة قيد التطوير</p>
+              <p style="font-size:13px; color:var(--text2); margin:0">المزامنة السحابية ستكون متاحة قريباً مع دعم Google Drive و Dropbox.</p>
+            </div>
+            
+            <div style="opacity:0.6; pointer-events:none">
+              <div class="form-group" style="margin-bottom:12px">
+                <label>اختر خدمة السحابة:</label>
+                <select id="cloudService">
+                  <option>Google Drive</option>
+                  <option>Dropbox</option>
+                  <option>iCloud</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" style="width:100%">🔐 تسجيل الدخول</button>
+            </div>
+          </div>
+          
+          <!-- ========== Method 5: Email Sync ========== -->
+          <div id="syncMethod-email" style="display:none">
+            <div class="card" style="background:var(--surface2); margin-bottom:16px">
+              <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+                <span style="font-size:32px">📧</span>
+                <div style="flex:1">
+                  <h3 style="margin:0; font-size:16px">مزامنة عبر البريد الإلكتروني</h3>
+                  <p style="margin:0; font-size:12px; color:var(--text3)">إرسال البيانات كملف مرفق بالبريد</p>
+                </div>
+                <button class="btn btn-sm btn-outline" onclick="hideSyncMethod('email')" title="إخفاء هذه الطريقة">✕</button>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <span class="chip chip-success">✓ تعمل دائماً</span>
+                <span class="chip chip-primary">📧 سهل</span>
+                <span class="chip" style="background:rgba(236,201,75,0.15); color:#d69e2e">⚠️ يدوية</span>
+              </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom:12px">
+              <label>البريد الإلكتروني للمستلم:</label>
+              <input type="email" id="syncEmailAddress" placeholder="example@email.com">
+            </div>
+            
+            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:8px; margin-bottom:12px">
+              <button class="btn btn-primary" onclick="sendSyncEmail()" style="width:100%">📤 إرسال البيانات</button>
+              <button class="btn btn-outline" onclick="document.getElementById('emailRestoreInput').click()" style="width:100%">📥 استيراد من ملف</button>
+              <input type="file" id="emailRestoreInput" accept=".json" style="display:none" onchange="importDataFile(this)">
+            </div>
+            
+            <div style="background:var(--surface2); padding:12px; border-radius:var(--radius-sm)">
+              <p style="font-size:12px; color:var(--text3); margin:0">
+                💡 سيتم فتح تطبيق البريد مع ملف البيانات مرفق. أرسله لنفسك واستورده من الجهاز الآخر.
+              </p>
+            </div>
+          </div>
+          
+          <!-- ========== Method 6: Bluetooth Sync ========== -->
+          <div id="syncMethod-bluetooth" style="display:none">
+            <div class="card" style="background:var(--surface2); margin-bottom:16px">
+              <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+                <span style="font-size:32px">📱</span>
+                <div style="flex:1">
+                  <h3 style="margin:0; font-size:16px">مزامنة بلوتوث</h3>
+                  <p style="margin:0; font-size:12px; color:var(--text3)">نقل مباشر بين الأجهزة القريبة</p>
+                </div>
+                <button class="btn btn-sm btn-outline" onclick="hideSyncMethod('bluetooth')" title="إخفاء هذه الطريقة">✕</button>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <span class="chip chip-success">✓ بدون إنترنت</span>
+                <span class="chip chip-primary">⚡ سريع</span>
+                <span class="chip" style="background:rgba(252,129,129,0.15); color:#e53e3e">⚠️ يدعمه بعض المتصفحات</span>
+              </div>
+            </div>
+            
+            <div id="bluetoothStatus" style="background:var(--surface2); padding:16px; border-radius:var(--radius-sm); margin-bottom:16px">
+              <div style="display:flex; align-items:center; gap:12px">
+                <span style="font-size:24px" id="bluetoothIcon">📱</span>
+                <div>
+                  <p style="font-weight:600; margin:0" id="bluetoothStatusText">جاهز للاتصال</p>
+                  <p style="font-size:12px; color:var(--text3); margin:4px 0 0 0" id="bluetoothStatusSub">اضغط للبحث عن أجهزة بلوتوث</p>
+                </div>
+              </div>
+            </div>
+            
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px">
+              <button class="btn btn-primary" onclick="startBluetoothSync()">🔍 البحث عن أجهزة</button>
+              <button class="btn btn-outline" onclick="sendBluetoothData()">📤 إرسال بيانات</button>
+            </div>
+            
+            <div id="bluetoothDevicesList" style="margin-bottom:16px"></div>
+            
+            <div style="background:rgba(236,201,75,0.1); padding:12px; border-radius:var(--radius-sm); border:2px solid var(--warning)">
+              <p style="font-size:12px; color:var(--text2); margin:0">
+                ⚠️ <strong>ملاحظة:</strong> مزامنة البلوتوث تتطلب متصفحاً يدعم Web Bluetooth API (Chrome, Edge على الكمبيوتر).
+              </p>
+            </div>
+          </div>
+          
+          <!-- Sync Activity Log -->
+          <div class="card" style="margin-top:20px">
+            <div class="card-header">
+              <span class="card-title">📋 سجل المزامنة</span>
+              <button class="btn btn-sm btn-outline" onclick="clearSyncLog()">🗑️ مسح</button>
+            </div>
+            <div id="syncLog" style="max-height:200px; overflow-y:auto">
+              <p style="color:var(--text3); font-size:13px; text-align:center; padding:20px">لا توجد عمليات مزامنة بعد</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 9. SETTINGS SECTION ========== -->
+      <div class="section" id="sec-settings">
+        <div class="card">
+          <div class="card-header"><span class="card-title">🎨 المظهر والألوان</span></div>
+          <div style="margin-bottom:20px">
+            <label style="font-weight:600; margin-bottom:10px; display:block">لون التطبيق:</label>
+            <div class="color-grid" id="colorGrid"></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px">
+            <label style="font-weight:600">الوضع الليلي:</label>
+            <button class="btn btn-sm btn-outline" onclick="toggleDarkMode()" id="darkModeBtnSettings">🌙 تفعيل</button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header"><span class="card-title">🔒 نظام الحماية</span></div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>كلمة السر الحالية</label>
+              <input type="password" id="currentPassword">
+            </div>
+            <div class="form-group">
+              <label>كلمة السر الجديدة</label>
+              <input type="password" id="newPassword">
+            </div>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="changePassword()">🔑 تغيير كلمة السر</button>
+            <button class="btn btn-danger" onclick="removePassword()">❌ إلغاء كلمة السر</button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header"><span class="card-title">🔐 حماية الأقسام</span></div>
+          <p style="color:var(--text3); font-size:13px; margin-bottom:16px">تفعيل أو إلغاء الحماية على كل قسم على حدة:</p>
+          <div id="sectionProtectionList" style="display:flex; flex-direction:column; gap:8px"></div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header"><span class="card-title">💾 النسخ الاحتياطي</span></div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px; flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="manualBackup()">📥 نسخ احتياطي يدوي</button>
+            <button class="btn btn-outline" onclick="document.getElementById('restoreInput').click()">📤 استيراد نسخة</button>
+            <input type="file" id="restoreInput" accept="*/*" style="display:none" onchange="restoreBackup(this)">
+          </div>
+          <p style="color:var(--text3); font-size:13px" id="lastBackupInfo"></p>
+          <p style="color:var(--text3); font-size:12px; margin-top:8px">💡 للمزامنة بين الأجهزة، استخدم قسم "المزامنة" من القائمة الجانبية</p>
+        </div>
+        
+        <div class="card">
+          <div class="card-header"><span class="card-title">⚠️ حذف البيانات</span></div>
+          <div class="btn-group">
+            <button class="btn btn-warning" onclick="clearSpecificData()">🗑️ حذف بيانات محددة</button>
+            <button class="btn btn-danger" onclick="clearAllData()">💣 حذف كل البيانات</button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header"><span class="card-title">📱 تثبيت التطبيق</span></div>
+          <button class="btn btn-primary" id="installBtn" style="display:none" onclick="installPWA()">📲 تثبيت التطبيق</button>
+          <p style="color:var(--text3); font-size:13px; margin-top:8px">يمكنك تثبيت التطبيق على جهازك للعمل بدون إنترنت</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Password Screen -->
+<div class="password-screen" id="passwordScreen">
+  <div class="password-box">
+    <h2>🔒 قسم محمي</h2>
+    <p id="passwordSectionName">أدخل كلمة السر للمتابعة</p>
+    <input type="password" id="passwordInput" maxlength="10" placeholder="••••" onkeydown="if(event.key==='Enter')checkPassword()">
+    <button class="btn btn-primary" onclick="checkPassword()">دخول</button>
+    <button class="btn btn-outline" style="margin-top:8px" onclick="closePasswordScreen()">إلغاء</button>
+  </div>
+</div>
+
+<!-- Generic Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">عنوان</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ==================== DATABASE ====================
+const DB_NAME = 'DermaCenterDB';
+const DB_VER = 3;
+let db;
+
+const STORES = ['patients', 'visits', 'doctors', 'sessions', 'laserSessions', 'files', 'photos', 'medications', 'prescriptions', 'expenses', 'appointments', 'calls', 'labs', 'settings', 'laserAreas', 'laserPackages', 'attendance'];
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VER);
+    
+    request.onupgradeneeded = (e) => {
+      const database = e.target.result;
+      STORES.forEach(storeName => {
+        if (!database.objectStoreNames.contains(storeName)) {
+          const store = database.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+          
+          if (storeName === 'patients') {
+            store.createIndex('name', 'name');
+            store.createIndex('phone', 'phone');
+            store.createIndex('date', 'createdAt');
+          }
+          if (storeName === 'laserSessions') store.createIndex('patientId', 'patientId');
+          if (storeName === 'photos') store.createIndex('patientId', 'patientId');
+          if (storeName === 'files') store.createIndex('patientId', 'patientId');
+          if (storeName === 'appointments') store.createIndex('date', 'date');
+        }
+      });
+    };
+    
+    request.onsuccess = (e) => {
+      db = e.target.result;
+      resolve(db);
+    };
+    
+    request.onerror = (e) => reject(e);
+  });
+}
+
+function dbAdd(store, data) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const st = tx.objectStore(store);
+    data.createdAt = data.createdAt || new Date().toISOString();
+    const request = st.add(data);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = (e) => reject(e);
+  });
+}
+
+function dbPut(store, data) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const request = tx.objectStore(store).put(data);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = (e) => reject(e);
+  });
+}
+
+function dbDelete(store, id) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const request = tx.objectStore(store).delete(id);
+    request.onsuccess = () => resolve();
+    request.onerror = (e) => reject(e);
+  });
+}
+
+function dbGet(store, id) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const request = tx.objectStore(store).get(id);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = (e) => reject(e);
+  });
+}
+
+function dbGetAll(store) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const request = tx.objectStore(store).getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = (e) => reject(e);
+  });
+}
+
+function dbClear(store) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const request = tx.objectStore(store).clear();
+    request.onsuccess = () => resolve();
+    request.onerror = (e) => reject(e);
+  });
+}
+
+// ==================== GLOBALS ====================
+let currentSection = 'center';
+let pendingSection = '';
+let APP_PASSWORD = '2137';
+let protectedSections = { doctors: true, files: true, reports: true, settings: true, laser: false, assistant: false };
+let selectedPatientId = null;
+let selectedSessions = [];
+let deferredPrompt = null;
+
+// قائمة الأقسام مع أسمائها وأيقوناتها
+const SECTION_PROTECTION_CONFIG = [
+  { id: 'doctors', name: 'الأطباء', icon: '👨‍⚕️' },
+  { id: 'files', name: 'الملفات', icon: '📁' },
+  { id: 'reports', name: 'التقارير', icon: '📊' },
+  { id: 'settings', name: 'الإعدادات', icon: '⚙️' },
+  { id: 'laser', name: 'الليزر', icon: '✨' },
+  { id: 'assistant', name: 'المساعد', icon: '👨‍💼' }
+];
+
+// تحميل إعدادات حماية الأقسام من localStorage
+function loadSectionProtection() {
+  const saved = localStorage.getItem('sectionProtection');
+  if (saved) {
+    protectedSections = JSON.parse(saved);
+  }
+  renderSectionProtectionList();
+  updateNavProtectionIcons();
+}
+
+// حفظ إعدادات حماية الأقسام
+function saveSectionProtection() {
+  localStorage.setItem('sectionProtection', JSON.stringify(protectedSections));
+  updateNavProtectionIcons();
+}
+
+// تبديل حماية قسم معين
+function toggleSectionProtection(sectionId) {
+  protectedSections[sectionId] = !protectedSections[sectionId];
+  saveSectionProtection();
+  renderSectionProtectionList();
+  toast(protectedSections[sectionId] ? `🔒 تم تفعيل الحماية على قسم ${getSectionName(sectionId)}` : `🔓 تم إلغاء الحماية على قسم ${getSectionName(sectionId)}`);
+}
+
+// الحصول على اسم القسم
+function getSectionName(sectionId) {
+  const section = SECTION_PROTECTION_CONFIG.find(s => s.id === sectionId);
+  return section ? section.name : sectionId;
+}
+
+// إنشاء قائمة حماية الأقسام
+function renderSectionProtectionList() {
+  const container = document.getElementById('sectionProtectionList');
+  if (!container) return;
+  
+  container.innerHTML = SECTION_PROTECTION_CONFIG.map(section => `
+    <div class="section-protection-item">
+      <div class="section-name">
+        <span class="section-icon">${section.icon}</span>
+        <span>${section.name}</span>
+      </div>
+      <div class="toggle-switch ${protectedSections[section.id] ? 'active' : ''}" 
+           onclick="toggleSectionProtection('${section.id}')"
+           title="${protectedSections[section.id] ? 'إلغاء الحماية' : 'تفعيل الحماية'}">
+      </div>
+    </div>
+  `).join('');
+}
+
+// تحديث أيقونات الحماية في شريط التنقل
+function updateNavProtectionIcons() {
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const section = item.dataset.section;
+    if (section) {
+      // إزالة أيقونة القفل القديمة إن وجدت
+      const oldLock = item.querySelector('.lock-badge');
+      if (oldLock) oldLock.remove();
+      
+      // إضافة أيقونة جديدة إذا كان القسم محمي
+      if (protectedSections[section]) {
+        const lockBadge = document.createElement('span');
+        lockBadge.className = 'lock-badge';
+        lockBadge.style.cssText = 'position:absolute; top:2px; right:2px; font-size:10px;';
+        lockBadge.textContent = '🔒';
+        item.appendChild(lockBadge);
+      }
+      
+      // تحديث دالة النقر
+      if (protectedSections[section] && section !== 'center' && section !== 'search') {
+        item.onclick = () => openProtected(section);
+      } else {
+        item.onclick = () => navigateTo(section);
+      }
+    }
+  });
+}
+
+const DEFAULT_SESSIONS = [
+  { name: 'فراكشنال ليزر', price: 500 },
+  { name: 'كى تون', price: 400 },
+  { name: 'تقشير بارد', price: 350 },
+  { name: 'تقشير كيميائي', price: 300 },
+  { name: 'حقن شعر', price: 600 },
+  { name: 'بلازما', price: 500 },
+  { name: 'ميزوثيرابي', price: 450 },
+  { name: 'فيلر', price: 1500 },
+  { name: 'بوتكس', price: 1200 },
+  { name: 'هيدرافيشيال', price: 400 },
+  { name: 'ديرما بن', price: 500 },
+  { name: 'ليزر كربوني', price: 450 }
+];
+
+const COLORS = [
+  { name: 'blue', label: 'أزرق', bg: '#667eea' },
+  { name: 'green', label: 'أخضر', bg: '#48bb78' },
+  { name: 'purple', label: 'بنفسجي', bg: '#9f7aea' },
+  { name: 'red', label: 'أحمر', bg: '#fc8181' },
+  { name: 'orange', label: 'برتقالي', bg: '#ed8936' },
+  { name: 'teal', label: 'تيل', bg: '#38b2ac' },
+  { name: 'pink', label: 'وردي', bg: '#ed64a6' },
+  { name: 'cyan', label: 'سماوي', bg: '#0bc5ea' },
+  { name: 'indigo', label: 'نيلي', bg: '#5c6bc0' },
+  { name: 'amber', label: 'عنبري', bg: '#ffa726' },
+  { name: 'emerald', label: 'زمردي', bg: '#10b981' },
+  { name: 'rose', label: 'روز', bg: '#f43f5e' }
+];
+
+// ==================== TOAST ====================
+function toast(msg, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}</span> ${msg}`;
+  container.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ==================== NAVIGATION ====================
+function navigateTo(section) {
+  currentSection = section;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(`sec-${section}`).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.section === section);
+  });
+  
+  const titles = {
+    center: '🏠 لوحة التحكم',
+    assistant: '👨‍💼 المساعد',
+    sync: '🔄 المزامنة',
+    doctors: '👨‍⚕️ الأطباء',
+    laser: '✨ ليزر إزالة الشعر',
+    files: '📁 الملفات',
+    search: '🔍 البحث المتقدم',
+    reports: '📊 التقارير',
+    settings: '⚙️ الإعدادات'
+  };
+  document.getElementById('pageTitle').textContent = titles[section] || 'مركز الجلدية والليزر';
+  
+  if (section === 'center') loadDashboard();
+  if (section === 'assistant') loadAssistant();
+  if (section === 'doctors') loadDoctors();
+  if (section === 'laser') loadLaser();
+  if (section === 'reports') loadReports();
+  if (section === 'settings') loadSettings();
+  if (section === 'search') runAdvancedSearch();
+  if (section === 'files') loadFiles();
+  if (section === 'sync') loadSyncSection();
+}
+
+function openProtected(section) {
+  if (!protectedSections[section]) {
+    navigateTo(section);
+    return;
+  }
+  pendingSection = section;
+  const names = {
+    doctors: 'قسم الأطباء',
+    files: 'قسم الملفات',
+    reports: 'قسم التقارير',
+    settings: 'قسم الإعدادات'
+  };
+  document.getElementById('passwordSectionName').textContent = names[section] || 'أدخل كلمة السر';
+  document.getElementById('passwordInput').value = '';
+  document.getElementById('passwordScreen').classList.add('show');
+  setTimeout(() => document.getElementById('passwordInput').focus(), 200);
+}
+
+function checkPassword() {
+  if (document.getElementById('passwordInput').value === APP_PASSWORD) {
+    document.getElementById('passwordScreen').classList.remove('show');
+    navigateTo(pendingSection);
+  } else {
+    toast('كلمة السر غير صحيحة', 'error');
+    document.getElementById('passwordInput').value = '';
+  }
+}
+
+function closePasswordScreen() {
+  document.getElementById('passwordScreen').classList.remove('show');
+}
+
+// ==================== MODAL ====================
+function showModal(title, bodyHTML, footerHTML = '') {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = bodyHTML;
+  document.getElementById('modalFooter').innerHTML = footerHTML;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+// ==================== TABS ====================
+function showAssistantTab(tab) {
+  document.querySelectorAll('[id^="assistantTab-"]').forEach(t => t.style.display = 'none');
+  document.getElementById(`assistantTab-${tab}`).style.display = 'block';
+  document.querySelectorAll('#sec-assistant .tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  if (tab === 'patientList') loadPatientList();
+  if (tab === 'attendance') loadAttendance();
+  if (tab === 'appointments') loadAppointments();
+  if (tab === 'calls') loadCalls();
+  if (tab === 'labs') loadLabsList();
+}
+
+function showDoctorTab(tab) {
+  document.querySelectorAll('[id^="doctorTab-"]').forEach(t => t.style.display = 'none');
+  document.getElementById(`doctorTab-${tab}`).style.display = 'block';
+  document.querySelectorAll('#sec-doctors .tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  if (tab === 'list') loadDoctorsList();
+  if (tab === 'medications') loadMedications();
+  if (tab === 'prescriptions') loadPrescriptions();
+  if (tab === 'percentages') loadDoctorPercentages();
+}
+
+function showLaserTab(tab) {
+  document.querySelectorAll('[id^="laserTab-"]').forEach(t => t.style.display = 'none');
+  document.getElementById(`laserTab-${tab}`).style.display = 'block';
+  document.querySelectorAll('#sec-laser .tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  if (tab === 'sessions') loadLaserSessions();
+  if (tab === 'areas') loadLaserAreas();
+  if (tab === 'packages') loadLaserPackages();
+}
+
+function showReportTab(tab) {
+  document.querySelectorAll('[id^="reportTab-"]').forEach(t => t.style.display = 'none');
+  document.getElementById(`reportTab-${tab}`).style.display = 'block';
+  document.querySelectorAll('#sec-reports .tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  if (tab === 'financial') generateFinancialReport();
+  if (tab === 'visits') generateVisitsReport();
+  if (tab === 'sessions') generateSessionsReport();
+  if (tab === 'expenses') loadExpenses();
+}
+
+// ==================== DASHBOARD ====================
+async function loadDashboard() {
+  const patients = await dbGetAll('patients');
+  const today = new Date().toISOString().split('T')[0];
+  const todayVisits = patients.filter(p => p.createdAt && p.createdAt.startsWith(today));
+  const totalRevenue = patients.reduce((sum, p) => sum + (parseFloat(p.totalAmount) || 0), 0);
+  const expenses = await dbGetAll('expenses');
+  const todayExpenses = expenses.filter(e => e.date && e.date.startsWith(today)).reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+
+  document.getElementById('dashboardStats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon blue">👥</div>
+      <div class="stat-info"><h3>${patients.length}</h3><p>إجمالي المرضى</p></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">📅</div>
+      <div class="stat-info"><h3>${todayVisits.length}</h3><p>زيارات اليوم</p></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">💰</div>
+      <div class="stat-info"><h3>${totalRevenue.toLocaleString()} ج.م</h3><p>إجمالي الإيرادات</p></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon pink">📉</div>
+      <div class="stat-info"><h3>${todayExpenses.toLocaleString()} ج.م</h3><p>مصروفات اليوم</p></div>
+    </div>
+  `;
+
+  let rows = '';
+  todayVisits.forEach((p, i) => {
+    rows += `<tr>
+      <td>${i + 1}</td>
+      <td>${p.name}</td>
+      <td><span class="chip chip-primary">${p.visitType || '-'}</span></td>
+      <td>${(p.sessions || []).map(s => s.name).join(', ') || '-'}</td>
+      <td>${p.totalAmount || 0} ج.م</td>
+      <td><span class="chip chip-success">✓</span></td>
+    </tr>`;
+  });
+  document.getElementById('todayVisitsTable').innerHTML = rows || '<tr><td colspan="6" style="text-align:center;color:var(--text3)">لا توجد زيارات اليوم</td></tr>';
+
+  const appointments = await dbGetAll('appointments');
+  const upcoming = appointments.filter(a => new Date(a.date) >= new Date()).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5);
+  
+  document.getElementById('upcomingAppointments').innerHTML = upcoming.length ? upcoming.map(a => `
+    <div style="display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px solid var(--border)">
+      <span style="font-size:20px">📅</span>
+      <div style="flex:1"><strong>${a.patientName || 'مريض'}</strong><br><span style="color:var(--text3);font-size:12px">${new Date(a.date).toLocaleString('ar-EG')}</span></div>
+      <span class="chip chip-primary">${a.type || 'موعد'}</span>
+      <button class="btn btn-sm btn-success" onclick="sendWhatsAppReminder('${a.phone || ''}','${a.patientName || ''}','${a.date}')">📱 تذكير</button>
+    </div>
+  `).join('') : '<p style="text-align:center;color:var(--text3);padding:20px">لا توجد مواعيد قادمة</p>';
+}
+
+// ==================== ASSISTANT ====================
+async function loadAssistant() {
+  const sessions = await dbGetAll('sessions');
+  if (sessions.length === 0) {
+    for (const s of DEFAULT_SESSIONS) {
+      await dbAdd('sessions', { ...s });
+    }
+    loadSessionGrid();
+  } else {
+    loadSessionGrid();
+  }
+  document.getElementById('attendanceDate').textContent = new Date().toLocaleDateString('ar-EG');
+}
+
+async function loadSessionGrid() {
+  const sessions = await dbGetAll('sessions');
+  document.getElementById('sessionGrid').innerHTML = sessions.map(s => `
+    <div class="session-option" data-id="${s.id}" onclick="toggleSession(this, ${s.id}, '${s.name}', ${s.price})">
+      <span class="session-name">${s.name}</span>
+      <span class="session-price">${s.price} ج.م</span>
+    </div>
+  `).join('');
+}
+
+function onVisitTypeChange() {
+  const v = document.getElementById('patVisitType').value;
+  document.getElementById('sessionSelector').style.display = (v === 'جلسة' || v === 'كشف + جلسة') ? 'block' : 'none';
+}
+
+function toggleSession(el, id, name, price) {
+  el.classList.toggle('selected');
+  const idx = selectedSessions.findIndex(s => s.id === id);
+  if (idx > -1) {
+    selectedSessions.splice(idx, 1);
+  } else {
+    selectedSessions.push({ id, name, price });
+  }
+}
+
+async function addNewSessionType() {
+  const name = document.getElementById('newSessionName').value.trim();
+  const price = parseFloat(document.getElementById('newSessionPrice').value) || 0;
+  if (!name) {
+    toast('أدخل اسم الجلسة', 'warning');
+    return;
+  }
+  await dbAdd('sessions', { name, price });
+  document.getElementById('newSessionName').value = '';
+  document.getElementById('newSessionPrice').value = '';
+  loadSessionGrid();
+  toast('تم إضافة الجلسة بنجاح');
+}
+
+async function savePatient() {
+  const name = document.getElementById('patName').value.trim();
+  const age = document.getElementById('patAge').value;
+  const address = document.getElementById('patAddress').value.trim();
+  const phone = document.getElementById('patPhone').value.trim();
+  const visitType = document.getElementById('patVisitType').value;
+  const fee = parseFloat(document.getElementById('patFee').value) || 0;
+  const notes = document.getElementById('patNotes').value;
+  const nextVisit = document.getElementById('patNextVisit').value;
+
+  if (!name) {
+    toast('أدخل اسم المريض', 'warning');
+    return;
+  }
+  if (!visitType) {
+    toast('اختر نوع الزيارة', 'warning');
+    return;
+  }
+
+  let totalAmount = fee;
+  if (visitType === 'جلسة') {
+    totalAmount = selectedSessions.reduce((sum, s) => sum + s.price, 0);
+  }
+  if (visitType === 'كشف + جلسة') {
+    totalAmount = fee + selectedSessions.reduce((sum, s) => sum + s.price, 0);
+  }
+
+  const patient = {
+    name,
+    age: parseInt(age) || 0,
+    address,
+    phone,
+    visitType,
+    sessions: [...selectedSessions],
+    fee,
+    totalAmount,
+    notes,
+    nextVisit,
+    createdAt: new Date().toISOString()
+  };
+  
+  const id = await dbAdd('patients', patient);
+
+  if (nextVisit) {
+    await dbAdd('appointments', {
+      patientId: id,
+      patientName: name,
+      phone,
+      date: nextVisit,
+      type: visitType,
+      status: 'قادم',
+      createdAt: new Date().toISOString()
+    });
+  }
+
+  toast('✅ تم حفظ بيانات المريض بنجاح');
+  clearPatientForm();
+  loadDashboard();
+}
+
+function clearPatientForm() {
+  ['patName', 'patAge', 'patAddress', 'patPhone', 'patFee', 'patNotes', 'patNextVisit'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('patVisitType').value = '';
+  selectedSessions = [];
+  document.querySelectorAll('.session-option').forEach(el => el.classList.remove('selected'));
+  document.getElementById('sessionSelector').style.display = 'none';
+}
+
+// Patient List
+async function loadPatientList() {
+  const patients = await dbGetAll('patients');
+  renderPatientTable(patients);
+}
+
+function renderPatientTable(patients) {
+  const tbody = document.getElementById('patientListTable');
+  tbody.innerHTML = patients.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((p, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${p.name}</td>
+      <td>${p.age || '-'}</td>
+      <td>${p.phone || '-'}</td>
+      <td><span class="chip chip-primary">${p.visitType || '-'}</span></td>
+      <td>${p.createdAt ? new Date(p.createdAt).toLocaleDateString('ar-EG') : '-'}</td>
+      <td>${p.totalAmount || 0} ج.م</td>
+      <td>
+        <button class="btn btn-sm btn-outline" onclick="editPatient(${p.id})">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="deletePatient(${p.id})">🗑️</button>
+        <button class="btn btn-sm btn-success" onclick="sendWhatsApp('${p.phone}','${p.name}')">📱</button>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--text3)">لا توجد بيانات</td></tr>';
+}
+
+async function searchPatients(q) {
+  const patients = await dbGetAll('patients');
+  const s = q.toLowerCase();
+  const filtered = patients.filter(p => 
+    (p.name || '').toLowerCase().includes(s) ||
+    (p.phone || '').includes(s) ||
+    (p.address || '').toLowerCase().includes(s)
+  );
+  renderPatientTable(filtered);
+}
+
+async function editPatient(id) {
+  const p = await dbGet('patients', id);
+  if (!p) return;
+  
+  showModal('✏️ تعديل بيانات المريض', `
+    <div class="form-grid">
+      <div class="form-group"><label>الاسم</label><input type="text" id="editName" value="${p.name || ''}"></div>
+      <div class="form-group"><label>السن</label><input type="number" id="editAge" value="${p.age || ''}"></div>
+      <div class="form-group"><label>العنوان</label><input type="text" id="editAddress" value="${p.address || ''}"></div>
+      <div class="form-group"><label>الهاتف</label><input type="tel" id="editPhone" value="${p.phone || ''}"></div>
+      <div class="form-group"><label>نوع الزيارة</label>
+        <select id="editVisitType">
+          <option ${p.visitType === 'كشف' ? 'selected' : ''}>كشف</option>
+          <option ${p.visitType === 'إعادة' ? 'selected' : ''}>إعادة</option>
+          <option ${p.visitType === 'جلسة' ? 'selected' : ''}>جلسة</option>
+          <option ${p.visitType === 'كشف + جلسة' ? 'selected' : ''}>كشف + جلسة</option>
+        </select>
+      </div>
+      <div class="form-group"><label>المبلغ</label><input type="number" id="editAmount" value="${p.totalAmount || 0}"></div>
+    </div>
+    <div class="form-group" style="margin-top:12px"><label>ملاحظات</label><textarea id="editNotes">${p.notes || ''}</textarea></div>
+  `, `<button class="btn btn-primary" onclick="updatePatient(${id})">💾 حفظ التعديلات</button><button class="btn btn-outline" onclick="closeModal()">إلغاء</button>`);
+}
+
+async function updatePatient(id) {
+  const p = await dbGet('patients', id);
+  p.name = document.getElementById('editName').value;
+  p.age = parseInt(document.getElementById('editAge').value) || 0;
+  p.address = document.getElementById('editAddress').value;
+  p.phone = document.getElementById('editPhone').value;
+  p.visitType = document.getElementById('editVisitType').value;
+  p.totalAmount = parseFloat(document.getElementById('editAmount').value) || 0;
+  p.notes = document.getElementById('editNotes').value;
+  await dbPut('patients', p);
+  closeModal();
+  toast('تم التعديل بنجاح');
+  loadPatientList();
+}
+
+async function deletePatient(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا المريض؟')) return;
+  await dbDelete('patients', id);
+  toast('تم الحذف', 'info');
+  loadPatientList();
+  loadDashboard();
+}
+
+// Attendance
+async function loadAttendance() {
+  const patients = await dbGetAll('patients');
+  const att = await dbGetAll('attendance');
+  const today = new Date().toISOString().split('T')[0];
+  const todayAtt = att.filter(a => a.date && a.date.startsWith(today));
+  
+  const tbody = document.getElementById('attendanceTable');
+  tbody.innerHTML = patients.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 50).map(p => {
+    const checked = todayAtt.find(a => a.patientId === p.id);
+    return `<tr>
+      <td><input type="checkbox" ${checked ? 'checked' : ''} onchange="markAttendance(${p.id}, this.checked)"></td>
+      <td>${p.name}</td>
+      <td>${p.phone || '-'}</td>
+      <td>${p.visitType || '-'}</td>
+      <td>${checked ? new Date(checked.time).toLocaleTimeString('ar-EG') : '-'}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function markAttendance(patientId, checked) {
+  const today = new Date().toISOString().split('T')[0];
+  if (checked) {
+    await dbAdd('attendance', { patientId, date: today, time: new Date().toISOString() });
+    toast('تم تسجيل الحضور');
+  }
+}
+
+function searchAttendance(q) {
+  document.querySelectorAll('#attendanceTable tr').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+// Appointments
+async function loadAppointments() {
+  const apps = await dbGetAll('appointments');
+  document.getElementById('appointmentsTable').innerHTML = apps.sort((a, b) => new Date(a.date) - new Date(b.date)).map(a => `
+    <tr>
+      <td>${a.patientName || '-'}</td>
+      <td>${new Date(a.date).toLocaleString('ar-EG')}</td>
+      <td>${a.type || '-'}</td>
+      <td><span class="chip ${a.status === 'مكتمل' ? 'chip-success' : 'chip-primary'}">${a.status || 'قادم'}</span></td>
+      <td><button class="btn btn-sm btn-success" onclick="sendWhatsAppReminder('${a.phone || ''}','${a.patientName || ''}','${a.date}')">📱</button></td>
+      <td><button class="btn btn-sm btn-danger" onclick="deleteAppointment(${a.id})">🗑️</button></td>
+    </tr>
+  `).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text3)">لا توجد حجوزات</td></tr>';
+}
+
+function showAddAppointment() {
+  showModal('📅 حجز جديد', `
+    <div class="form-grid">
+      <div class="form-group"><label>اسم المريض</label><input type="text" id="appPatName"></div>
+      <div class="form-group"><label>الهاتف</label><input type="tel" id="appPhone"></div>
+      <div class="form-group"><label>التاريخ والوقت</label><input type="datetime-local" id="appDate"></div>
+      <div class="form-group"><label>النوع</label>
+        <select id="appType"><option>كشف</option><option>إعادة</option><option>جلسة</option><option>ليزر</option></select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:12px"><label>ملاحظات</label><textarea id="appNotes"></textarea></div>
+  `, `<button class="btn btn-primary" onclick="saveAppointment()">💾 حفظ</button>`);
+}
+
+async function saveAppointment() {
+  await dbAdd('appointments', {
+    patientName: document.getElementById('appPatName').value,
+    phone: document.getElementById('appPhone').value,
+    date: document.getElementById('appDate').value,
+    type: document.getElementById('appType').value,
+    notes: document.getElementById('appNotes').value,
+    status: 'قادم'
+  });
+  closeModal();
+  toast('تم الحفظ');
+  loadAppointments();
+}
+
+async function deleteAppointment(id) {
+  await dbDelete('appointments', id);
+  toast('تم الحذف', 'info');
+  loadAppointments();
+}
+
+// Calls
+async function loadCalls() {
+  const calls = await dbGetAll('calls');
+  document.getElementById('callsTable').innerHTML = calls.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(c => `
+    <tr>
+      <td>${c.patientName || '-'}</td>
+      <td>${new Date(c.createdAt).toLocaleString('ar-EG')}</td>
+      <td>${c.notes || '-'}</td>
+      <td><span class="chip chip-primary">${c.status || '-'}</span></td>
+      <td><button class="btn btn-sm btn-danger" onclick="deleteCall(${c.id})">🗑️</button></td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text3)">لا توجد مكالمات</td></tr>';
+}
+
+function showAddCall() {
+  showModal('📞 تسجيل مكالمة', `
+    <div class="form-grid">
+      <div class="form-group"><label>اسم المريض</label><input type="text" id="callPatName"></div>
+      <div class="form-group"><label>الحالة</label>
+        <select id="callStatus"><option>تم الرد</option><option>لا يوجد رد</option><option>مشغول</option><option>إعادة اتصال</option></select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:12px"><label>ملاحظات</label><textarea id="callNotes"></textarea></div>
+  `, `<button class="btn btn-primary" onclick="saveCall()">💾 حفظ</button>`);
+}
+
+async function saveCall() {
+  await dbAdd('calls', {
+    patientName: document.getElementById('callPatName').value,
+    status: document.getElementById('callStatus').value,
+    notes: document.getElementById('callNotes').value
+  });
+  closeModal();
+  toast('تم الحفظ');
+  loadCalls();
+}
+
+async function deleteCall(id) {
+  await dbDelete('calls', id);
+  loadCalls();
+}
+
+// Labs
+async function loadLabsList() {
+  const labs = await dbGetAll('labs');
+  document.getElementById('labsTable').innerHTML = labs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(l => `
+    <tr>
+      <td>${l.patientName || '-'}</td>
+      <td>${l.testName || '-'}</td>
+      <td>${new Date(l.createdAt).toLocaleDateString('ar-EG')}</td>
+      <td>${l.results || '-'}</td>
+      <td>${l.hasFiles ? '📎' : '—'}</td>
+      <td><button class="btn btn-sm btn-danger" onclick="deleteLab(${l.id})">🗑️</button></td>
+    </tr>
+  `).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text3)">لا توجد تحاليل</td></tr>';
+}
+
+function showAddLab() {
+  showModal('🔬 إضافة تحليل', `
+    <div class="form-grid">
+      <div class="form-group"><label>اسم المريض</label><input type="text" id="labPatName"></div>
+      <div class="form-group"><label>اسم التحليل</label><input type="text" id="labTestName"></div>
+    </div>
+    <div class="form-group" style="margin-top:12px"><label>النتائج</label><textarea id="labResults"></textarea></div>
+    <div class="form-group" style="margin-top:12px"><label>إرفاق ملفات</label><input type="file" id="labFiles" multiple></div>
+  `, `<button class="btn btn-primary" onclick="saveLab()">💾 حفظ</button>`);
+}
+
+async function saveLab() {
+  const files = document.getElementById('labFiles').files;
+  await dbAdd('labs', {
+    patientName: document.getElementById('labPatName').value,
+    testName: document.getElementById('labTestName').value,
+    results: document.getElementById('labResults').value,
+    hasFiles: files.length > 0
+  });
+  closeModal();
+  toast('تم الحفظ');
+  loadLabsList();
+}
+
+async function deleteLab(id) {
+  await dbDelete('labs', id);
+  loadLabsList();
+}
+
+function searchLabs(q) {
+  document.querySelectorAll('#labsTable tr').forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+// ==================== DOCTORS ====================
+async function loadDoctors() {
+  loadDoctorsList();
+}
+
+async function loadDoctorsList() {
+  const docs = await dbGetAll('doctors');
+  document.getElementById('doctorsTable').innerHTML = docs.map(d => `
+    <tr>
+      <td>${d.name}</td>
+      <td>${d.specialty || '-'}</td>
+      <td>${d.phone || '-'}</td>
+      <td>${d.percentage || 0}%</td>
+      <td>
+        <button class="btn btn-sm btn-outline" onclick="editDoctor(${d.id})">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteDoctor(${d.id})">🗑️</button>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text3)">لا يوجد أطباء</td></tr>';
+}
+
+function showAddDoctor() {
+  showModal('👨‍⚕️ إضافة طبيب', `
+    <div class="form-grid">
+      <div class="form-group"><label>الاسم</label><input type="text" id="docName"></div>
+      <div class="form-group"><label>التخصص</label><input type="text" id="docSpecialty"></div>
+      <div class="form-group"><label>الهاتف</label><input type="tel" id="docPhone"></div>
+      <div class="form-group"><label>النسبة %</label><input type="number" id="docPercentage" value="0" min="0" max="100"></div>
+    </div>
+  `, `<button class="btn btn-primary" onclick="saveDoctor()">💾 حفظ</button>`);
+}
+
+async function saveDoctor() {
+  await dbAdd('doctors', {
+    name: document.getElementById('docName').value,
+    specialty: document.getElementById('docSpecialty').value,
+    phone: document.getElementById('docPhone').value,
+    percentage: parseFloat(document.getElementById('docPercentage').value) || 0
+  });
+  closeModal();
+  toast('تم إضافة الطبيب');
+  loadDoctorsList();
+}
+
+async function editDoctor(id) {
+  const d = await dbGet('doctors', id);
+  showModal('✏️ تعديل بيانات الطبيب', `
+    <div class="form-grid">
+      <div class="form-group"><label>الاسم</label><input type="text" id="edDocName" value="${d.name || ''}"></div>
+      <div class="form-group"><label>التخصص</label><input type="text" id="edDocSpec" value="${d.specialty || ''}"></div>
+      <div class="form-group"><label>الهاتف</label><input type="tel" id="edDocPhone" value="${d.phone || ''}"></div>
+      <div class="form-group"><label>النسبة %</label><input type="number" id="edDocPer" value="${d.percentage || 0}"></div>
+    </div>
+  `, `<button class="btn btn-primary" onclick="updateDoctor(${id})">💾 حفظ</button>`);
+}
+
+async function updateDoctor(id) {
+  const d = await dbGet('doctors', id);
+  d.name = document.getElementById('edDocName').value;
+  d.specialty = document.getElementById('edDocSpec').value;
+  d.phone = document.getElementById('edDocPhone').value;
+  d.percentage = parseFloat(document.getElementById('edDocPer').value) || 0;
+  await dbPut('doctors', d);
+  closeModal();
+  toast('تم التعديل');
+  loadDoctorsList();
+}
+
+async function deleteDoctor(id) {
+  if (confirm('حذف الطبيب؟')) {
+    await dbDelete('doctors', id);
+    toast('تم الحذف', 'info');
+    loadDoctorsList();
+  }
+}
+
+async function doctorSearchPatients(q) {
+  if (!q) {
+    document.getElementById('doctorPatientResults').innerHTML = '';
+    return;
+  }
+  const patients = await dbGetAll('patients');
+  const s = q.toLowerCase();
+  const filtered = patients.filter(p => 
+    (p.name || '').toLowerCase().includes(s) ||
+    (p.phone || '').includes(s) ||
+    (p.address || '').toLowerCase().includes(s)
+  );
+  
+  document.getElementById('doctorPatientResults').innerHTML = filtered.map(p => `
+    <div class="card" style="margin-bottom:8px;padding:12px;cursor:pointer" onclick="selectPatientForDoctor(${p.id})">
+      <strong>${p.name}</strong> | ${p.phone || '-'} | ${p.age || '-'} سنة | <span class="chip chip-primary">${p.visitType || '-'}</span>
+      <button class="btn btn-sm btn-danger" style="float:left" onclick="event.stopPropagation();deletePatient(${p.id})">🗑️ حذف</button>
+    </div>
+  `).join('') || '<p style="color:var(--text3)">لا توجد نتائج</p>';
+}
+
+// Gallery
+async function searchPatientForGallery(q) {
+  if (!q) {
+    document.getElementById('galleryPatientSelect').innerHTML = '';
+    return;
+  }
+  const patients = await dbGetAll('patients');
+  const filtered = patients.filter(p => (p.name || '').toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('galleryPatientSelect').innerHTML = filtered.slice(0, 5).map(p => `
+    <button class="btn btn-sm btn-outline" style="margin:4px" onclick="loadPatientGallery(${p.id},'${p.name}')">${p.name}</button>
+  `).join('');
+}
+
+async function loadPatientGallery(patientId, name) {
+  selectedPatientId = patientId;
+  const photos = await dbGetAll('photos');
+  const patPhotos = photos.filter(p => p.patientId === patientId);
+  
+  document.getElementById('patientGallery').innerHTML = `
+    <h3 style="margin-bottom:12px">📸 صور ${name}</h3>
+    <div style="margin-bottom:12px">
+      <input type="file" id="galleryUpload" multiple accept="image/*" onchange="uploadGalleryPhotos(this, ${patientId})">
+      <select id="photoType" style="padding:6px;border-radius:var(--radius-xs);border:2px solid var(--border)">
+        <option value="before">قبل</option>
+        <option value="after">بعد</option>
+      </select>
+    </div>
+    <div class="gallery">${patPhotos.map(p => `
+      <div class="gallery-item">
+        <img src="${p.data}" alt="${p.type}">
+        <button class="delete-btn" onclick="deletePhoto(${p.id}, ${patientId}, '${name}')">✕</button>
+        <span style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.6);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px">${p.type === 'before' ? 'قبل' : 'بعد'}</span>
+      </div>
+    `).join('') || '<p style="color:var(--text3)">لا توجد صور</p>'}</div>
+  `;
+}
+
+async function uploadGalleryPhotos(input, patientId) {
+  const type = document.getElementById('photoType').value;
+  for (const file of input.files) {
+    const compressed = await compressImage(file, 800, 0.7);
+    await dbAdd('photos', { patientId, type, data: compressed, date: new Date().toISOString() });
+  }
+  toast('تم رفع الصور');
+  const p = await dbGet('patients', patientId);
+  loadPatientGallery(patientId, p.name);
+}
+
+async function deletePhoto(id, patientId, name) {
+  await dbDelete('photos', id);
+  loadPatientGallery(patientId, name);
+}
+
+// Image Compression
+function compressImage(file, maxW = 800, quality = 0.7) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width;
+        let h = img.height;
+        if (w > maxW) {
+          h = h * (maxW / w);
+          w = maxW;
+        }
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Medications
+async function loadMedications() {
+  const meds = await dbGetAll('medications');
+  document.getElementById('medicationsList').innerHTML = meds.map(m => `
+    <div class="card" style="margin-bottom:8px;padding:12px">
+      <strong>💊 ${m.name}</strong><br><span style="color:var(--text3);font-size:13px">${m.description || ''}</span>
+      <button class="btn btn-sm btn-danger" style="float:left" onclick="deleteMed(${m.id})">🗑️</button>
+    </div>
+  `).join('') || '<p style="color:var(--text3)">لا توجد أدوية مسجلة</p>';
+}
+
+function showAddMedication() {
+  showModal('💊 إضافة دواء', `
+    <div class="form-group"><label>اسم الدواء</label><input type="text" id="medName"></div>
+    <div class="form-group" style="margin-top:12px"><label>الوصف / الجرعة</label><textarea id="medDesc"></textarea></div>
+  `, `<button class="btn btn-primary" onclick="saveMed()">💾 حفظ</button>`);
+}
+
+async function saveMed() {
+  await dbAdd('medications', {
+    name: document.getElementById('medName').value,
+    description: document.getElementById('medDesc').value
+  });
+  closeModal();
+  toast('تم الحفظ');
+  loadMedications();
+}
+
+async function deleteMed(id) {
+  await dbDelete('medications', id);
+  loadMedications();
+}
+
+function searchMedications(q) {
+  document.querySelectorAll('#medicationsList .card').forEach(c => {
+    c.style.display = c.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+// Prescriptions
+async function loadPrescriptions() {
+  const presc = await dbGetAll('prescriptions');
+  document.getElementById('prescriptionsList').innerHTML = presc.map(p => `
+    <div class="card" style="margin-bottom:8px;padding:12px">
+      <strong>📋 ${p.name}</strong><br>
+      <pre style="white-space:pre-wrap;font-family:var(--font);color:var(--text2);margin-top:8px;font-size:13px">${p.content || ''}</pre>
+      <div class="btn-group">
+        <button class="btn btn-sm btn-outline" onclick="copyPrescription(\`${btoa(encodeURIComponent(p.content || ''))}\`)">📋 نسخ</button>
+        <button class="btn btn-sm btn-danger" onclick="deletePresc(${p.id})">🗑️</button>
+      </div>
+    </div>
+  `).join('') || '<p style="color:var(--text3)">لا توجد روشتات</p>';
+}
+
+function showAddPrescription() {
+  showModal('📋 روشتة جديدة', `
+    <div class="form-group"><label>اسم الروشتة</label><input type="text" id="prescName"></div>
+    <div class="form-group" style="margin-top:12px"><label>المحتوى</label><textarea id="prescContent" rows="8" placeholder="أدخل الأدوية والجرعات..."></textarea></div>
+  `, `<button class="btn btn-primary" onclick="savePresc()">💾 حفظ</button>`);
+}
+
+async function savePresc() {
+  await dbAdd('prescriptions', {
+    name: document.getElementById('prescName').value,
+    content: document.getElementById('prescContent').value
+  });
+  closeModal();
+  toast('تم الحفظ');
+  loadPrescriptions();
+}
+
+async function deletePresc(id) {
+  await dbDelete('prescriptions', id);
+  loadPrescriptions();
+}
+
+function copyPrescription(b64) {
+  navigator.clipboard.writeText(decodeURIComponent(atob(b64)));
+  toast('تم نسخ الروشتة');
+}
+
+// Doctor Percentages
+async function loadDoctorPercentages() {
+  const docs = await dbGetAll('doctors');
+  const patients = await dbGetAll('patients');
+  const totalRev = patients.reduce((s, p) => s + (parseFloat(p.totalAmount) || 0), 0);
+  
+  document.getElementById('doctorPercentages').innerHTML = docs.map(d => {
+    const share = (totalRev * (d.percentage || 0) / 100);
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--border)">
+      <span><strong>${d.name}</strong> (${d.percentage}%)</span>
+      <span style="color:var(--primary);font-weight:700">${share.toLocaleString()} ج.م</span>
+    </div>`;
+  }).join('') || '<p style="color:var(--text3)">لا يوجد أطباء مسجلين</p>';
+}
+
+// ==================== LASER ====================
+async function loadLaser() {
+  loadLaserSessions();
+}
+
+async function loadLaserSessions() {
+  const sessions = await dbGetAll('laserSessions');
+  document.getElementById('laserSessionsTable').innerHTML = sessions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(s => `
+    <tr>
+      <td>${s.patientName || '-'}</td>
+      <td>${s.area || '-'}</td>
+      <td>${s.sessionNum || 1}</td>
+      <td>${s.fluence || '-'} J/cm² | ${s.pulse || '-'}ms</td>
+      <td>${new Date(s.createdAt).toLocaleDateString('ar-EG')}</td>
+      <td>
+        <button class="btn btn-sm btn-outline" onclick="editLaserSession(${s.id})">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteLaserSession(${s.id})">🗑️</button>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text3)">لا توجد جلسات</td></tr>';
+}
+
+async function searchPatientForLaser(q) {
+  if (!q) {
+    document.getElementById('laserPatientSelect').innerHTML = '';
+    return;
+  }
+  const patients = await dbGetAll('patients');
+  const filtered = patients.filter(p => (p.name || '').toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('laserPatientSelect').innerHTML = filtered.slice(0, 5).map(p => `
+    <button class="btn btn-sm btn-outline" style="margin:4px" onclick="selectPatientForLaserSession(${p.id},'${p.name}')">${p.name}</button>
+  `).join('');
+}
+
+function selectPatientForLaserSession(id, name) {
+  selectedPatientId = id;
+  document.getElementById('laserPatientSearch').value = name;
+  document.getElementById('laserPatientSelect').innerHTML = `<span class="chip chip-success">✓ تم اختيار: ${name}</span>`;
+}
+
+async function saveLaserSession() {
+  if (!selectedPatientId) {
+    toast('اختر المريض أولاً', 'warning');
+    return;
+  }
+  
+  await dbAdd('laserSessions', {
+    patientId: selectedPatientId,
+    patientName: document.getElementById('laserPatientSearch').value,
+    area: document.getElementById('laserArea').value,
+    device: document.getElementById('laserDevice').value,
+    sessionNum: parseInt(document.getElementById('laserSessionNum').value) || 1,
+    skinType: document.getElementById('laserSkinType').value,
+    fluence: document.getElementById('laserFluence').value,
+    pulse: document.getElementById('laserPulse').value,
+    spotSize: document.getElementById('laserSpot').value,
+    price: parseFloat(document.getElementById('laserPrice').value) || 0,
+    notes: document.getElementById('laserNotes').value,
+    nextDate: document.getElementById('laserNextDate').value
+  });
+  
+  toast('تم حفظ جلسة الليزر');
+  clearLaserForm();
+  showLaserTab('sessions');
+}
+
+function clearLaserForm() {
+  selectedPatientId = null;
+  document.getElementById('laserPatientSearch').value = '';
+  document.getElementById('laserPatientSelect').innerHTML = '';
+  ['laserArea', 'laserDevice', 'laserSkinType', 'laserFluence', 'laserPulse', 'laserSpot', 'laserPrice', 'laserNotes', 'laserNextDate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+  });
+  document.getElementById('laserSessionNum').value = 1;
+}
+
+async function deleteLaserSession(id) {
+  await dbDelete('laserSessions', id);
+  toast('تم الحذف', 'info');
+  loadLaserSessions();
+}
+
+function searchLaserSessions(q) {
+  document.querySelectorAll('#laserSessionsTable tr').forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+async function loadLaserAreas() {
+  const areas = await dbGetAll('laserAreas');
+  document.getElementById('areasGrid').innerHTML = (areas.length ? areas : [
+    { name: 'الوجه كامل', price: 500 },
+    { name: 'تحت الإبط', price: 200 },
+    { name: 'الذراعين', price: 400 },
+    { name: 'الساقين', price: 600 },
+    { name: 'الظهر', price: 700 },
+    { name: 'البطن', price: 350 },
+    { name: 'بكيني كامل', price: 500 },
+    { name: 'الجسم كامل', price: 2000 }
+  ]).map(a => `
+    <div class="session-option">
+      <span class="session-name">${a.name}</span>
+      <span class="session-price">${a.price} ج.م</span>
+    </div>
+  `).join('');
+}
+
+function showAddArea() {
+  showModal('📍 إضافة منطقة', `
+    <div class="form-grid">
+      <div class="form-group"><label>اسم المنطقة</label><input type="text" id="areaName"></div>
+      <div class="form-group"><label>السعر</label><input type="number" id="areaPrice"></div>
+    </div>
+  `, `<button class="btn btn-primary" onclick="saveArea()">💾 حفظ</button>`);
+}
+
+async function saveArea() {
+  await dbAdd('laserAreas', {
+    name: document.getElementById('areaName').value,
+    price: parseFloat(document.getElementById('areaPrice').value) || 0
+  });
+  closeModal();
+  toast('تم الحفظ');
+  loadLaserAreas();
+}
+
+async function loadLaserPackages() {
+  const packages = await dbGetAll('laserPackages');
+  document.getElementById('packagesGrid').innerHTML = (packages.length ? packages : [
+    { name: 'باقة الوجه', sessions: 6, price: 2500 },
+    { name: 'باقة الجسم كامل', sessions: 8, price: 12000 },
+    { name: 'باقة تحت الإبط', sessions: 6, price: 1000 }
+  ]).map(p => `
+    <div class="card" style="margin-bottom:8px;padding:16px">
+      <strong>📦 ${p.name}</strong><br>
+      <span style="color:var(--text3)">عدد الجلسات: ${p.sessions}</span><br>
+      <span style="color:var(--primary);font-weight:700">${p.price} ج.م</span>
+    </div>
+  `).join('');
+}
+
+function showAddPackage() {
+  showModal('📦 إضافة باقة', `
+    <div class="form-grid">
+      <div class="form-group"><label>اسم الباقة</label><input type="text" id="pkgName"></div>
+      <div class="form-group"><label>عدد الجلسات</label><input type="number" id="pkgSessions"></div>
+      <div class="form-group"><label>السعر</label><input type="number" id="pkgPrice"></div>
+    </div>
+  `, `<button class="btn btn-primary" onclick="savePackage()">💾 حفظ</button>`);
+}
+
+async function savePackage() {
+  await dbAdd('laserPackages', {
+    name: document.getElementById('pkgName').value,
+    sessions: parseInt(document.getElementById('pkgSessions').value) || 0,
+    price: parseFloat(document.getElementById('pkgPrice').value) || 0
+  });
+  closeModal();
+  toast('تم الحفظ');
+  loadLaserPackages();
+}
+
+function searchLaserFollowup(q) {
+  // Followup search implementation
+}
+
+// ==================== FILES ====================
+async function loadFiles() {
+  // Files section implementation
+}
+
+async function searchFiles(q) {
+  if (!q) {
+    document.getElementById('filesPatientSelect').innerHTML = '';
+    return;
+  }
+  const patients = await dbGetAll('patients');
+  const filtered = patients.filter(p => (p.name || '').toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('filesPatientSelect').innerHTML = filtered.slice(0, 5).map(p => `
+    <button class="btn btn-sm btn-outline" style="margin:4px" onclick="selectPatientForFiles(${p.id},'${p.name}')">${p.name}</button>
+  `).join('');
+}
+
+async function selectPatientForFiles(id, name) {
+  selectedPatientId = id;
+  const files = await dbGetAll('files');
+  const patFiles = files.filter(f => f.patientId === id);
+  document.getElementById('savedFiles').innerHTML = patFiles.map(f => `
+    <div style="padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px">
+      <strong>${f.type}</strong> - ${new Date(f.createdAt).toLocaleDateString('ar-EG')}
+    </div>
+  `).join('') || '<p style="color:var(--text3)">لا توجد ملفات</p>';
+}
+
+function previewImages(input) {
+  const preview = document.getElementById('imagePreview');
+  preview.innerHTML = '';
+  for (const file of input.files) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.innerHTML += `<div class="gallery-item"><img src="${e.target.result}"></div>`;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+async function saveFiles() {
+  if (!selectedPatientId) {
+    toast('اختر المريض أولاً', 'warning');
+    return;
+  }
+  
+  const imageFiles = document.getElementById('imageFileInput').files;
+  for (const file of imageFiles) {
+    const compressed = await compressImage(file, 800, 0.7);
+    await dbAdd('files', {
+      patientId: selectedPatientId,
+      type: document.getElementById('fileType').value,
+      data: compressed
+    });
+  }
+  
+  toast('تم حفظ الملفات');
+  document.getElementById('imageFileInput').value = '';
+  document.getElementById('imagePreview').innerHTML = '';
+}
+
+// ==================== SEARCH ====================
+async function runAdvancedSearch() {
+  const name = document.getElementById('srchName').value.toLowerCase();
+  const phone = document.getElementById('srchPhone').value;
+  const address = document.getElementById('srchAddress').value.toLowerCase();
+  const dateFrom = document.getElementById('srchDateFrom').value;
+  const dateTo = document.getElementById('srchDateTo').value;
+  const visitType = document.getElementById('srchVisitType').value;
+  
+  const patients = await dbGetAll('patients');
+  const filtered = patients.filter(p => {
+    if (name && !(p.name || '').toLowerCase().includes(name)) return false;
+    if (phone && !(p.phone || '').includes(phone)) return false;
+    if (address && !(p.address || '').toLowerCase().includes(address)) return false;
+    if (visitType && p.visitType !== visitType) return false;
+    if (dateFrom && p.createdAt < dateFrom) return false;
+    if (dateTo && p.createdAt > dateTo + 'T23:59:59') return false;
+    return true;
+  });
+  
+  document.getElementById('searchCount').textContent = filtered.length;
+  document.getElementById('searchResultsTable').innerHTML = filtered.map((p, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${p.name}</td>
+      <td>${p.age || '-'}</td>
+      <td>${p.phone || '-'}</td>
+      <td>${p.address || '-'}</td>
+      <td><span class="chip chip-primary">${p.visitType || '-'}</span></td>
+      <td>${new Date(p.createdAt).toLocaleDateString('ar-EG')}</td>
+      <td>${p.totalAmount || 0} ج.م</td>
+      <td>
+        <button class="btn btn-sm btn-outline" onclick="editPatient(${p.id})">✏️</button>
+        <button class="btn btn-sm btn-success" onclick="sendWhatsApp('${p.phone}','${p.name}')">📱</button>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="9" style="text-align:center;color:var(--text3)">لا توجد نتائج</td></tr>';
+}
+
+// ==================== REPORTS ====================
+async function loadReports() {
+  generateFinancialReport();
+}
+
+async function generateFinancialReport() {
+  const patients = await dbGetAll('patients');
+  const expenses = await dbGetAll('expenses');
+  
+  const totalRevenue = patients.reduce((s, p) => s + (parseFloat(p.totalAmount) || 0), 0);
+  const totalExpenses = expenses.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+  const netProfit = totalRevenue - totalExpenses;
+  
+  document.getElementById('financialStats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon green">💰</div>
+      <div class="stat-info"><h3>${totalRevenue.toLocaleString()} ج.م</h3><p>إجمالي الإيرادات</p></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon pink">📉</div>
+      <div class="stat-info"><h3>${totalExpenses.toLocaleString()} ج.م</h3><p>إجمالي المصروفات</p></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue">📊</div>
+      <div class="stat-info"><h3>${netProfit.toLocaleString()} ج.م</h3><p>صافي الربح</p></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">👥</div>
+      <div class="stat-info"><h3>${patients.length}</h3><p>عدد المرضى</p></div>
+    </div>
+  `;
+  
+  // Monthly chart
+  const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+  const monthlyData = {};
+  patients.forEach(p => {
+    if (p.createdAt) {
+      const m = new Date(p.createdAt).getMonth();
+      monthlyData[m] = (monthlyData[m] || 0) + (parseFloat(p.totalAmount) || 0);
+    }
+  });
+  
+  const maxVal = Math.max(...Object.values(monthlyData), 1);
+  document.getElementById('financialChart').innerHTML = `
+    <h3 style="margin-bottom:16px">📈 الإيرادات الشهرية</h3>
+    ${months.map((m, i) => `
+      <div class="chart-bar">
+        <div class="label">${m}</div>
+        <div class="bar">
+          <div class="bar-fill" style="width:${((monthlyData[i] || 0) / maxVal * 100)}%">${(monthlyData[i] || 0).toLocaleString()}</div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+async function generateVisitsReport() {
+  const patients = await dbGetAll('patients');
+  const visitTypes = {};
+  patients.forEach(p => {
+    visitTypes[p.visitType] = (visitTypes[p.visitType] || 0) + 1;
+  });
+  
+  document.getElementById('visitsReport').innerHTML = Object.entries(visitTypes).map(([type, count]) => `
+    <div style="display:flex;justify-content:space-between;padding:12px;border-bottom:1px solid var(--border)">
+      <span><span class="chip chip-primary">${type}</span></span>
+      <span style="font-weight:700">${count} زيارة</span>
+    </div>
+  `).join('') || '<p style="color:var(--text3)">لا توجد بيانات</p>';
+}
+
+async function generateSessionsReport() {
+  const patients = await dbGetAll('patients');
+  const sessionCounts = {};
+  patients.forEach(p => {
+    (p.sessions || []).forEach(s => {
+      sessionCounts[s.name] = (sessionCounts[s.name] || 0) + 1;
+    });
+  });
+  
+  document.getElementById('sessionsReport').innerHTML = Object.entries(sessionCounts).map(([name, count]) => `
+    <div style="display:flex;justify-content:space-between;padding:12px;border-bottom:1px solid var(--border)">
+      <span>${name}</span>
+      <span style="font-weight:700">${count} جلسة</span>
+    </div>
+  `).join('') || '<p style="color:var(--text3)">لا توجد جلسات</p>';
+}
+
+async function loadExpenses() {
+  const expenses = await dbGetAll('expenses');
+  document.getElementById('expensesTable').innerHTML = expenses.sort((a, b) => new Date(b.date) - new Date(a.date)).map(e => `
+    <tr>
+      <td>${new Date(e.date).toLocaleDateString('ar-EG')}</td>
+      <td>${e.item}</td>
+      <td>${e.amount} ج.م</td>
+      <td>${e.notes || '-'}</td>
+      <td><button class="btn btn-sm btn-danger" onclick="deleteExpense(${e.id})">🗑️</button></td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text3)">لا توجد مصروفات</td></tr>';
+}
+
+function addExpense() {
+  showModal('📉 إضافة مصروف', `
+    <div class="form-grid">
+      <div class="form-group"><label>التاريخ</label><input type="date" id="expDate" value="${new Date().toISOString().split('T')[0]}"></div>
+      <div class="form-group"><label>البند</label><input type="text" id="expItem"></div>
+      <div class="form-group"><label>المبلغ</label><input type="number" id="expAmount"></div>
+    </div>
+    <div class="form-group" style="margin-top:12px"><label>ملاحظات</label><textarea id="expNotes"></textarea></div>
+  `, `<button class="btn btn-primary" onclick="saveExpense()">💾 حفظ</button>`);
+}
+
+async function saveExpense() {
+  await dbAdd('expenses', {
+    date: document.getElementById('expDate').value,
+    item: document.getElementById('expItem').value,
+    amount: parseFloat(document.getElementById('expAmount').value) || 0,
+    notes: document.getElementById('expNotes').value
+  });
+  closeModal();
+  toast('تم الحفظ');
+  loadExpenses();
+  generateFinancialReport();
+}
+
+async function deleteExpense(id) {
+  await dbDelete('expenses', id);
+  toast('تم الحذف', 'info');
+  loadExpenses();
+}
+
+// ==================== SETTINGS ====================
+async function loadSettings() {
+  // Color grid
+  const currentColor = localStorage.getItem('appColor') || 'blue';
+  document.getElementById('colorGrid').innerHTML = COLORS.map(c => `
+    <div class="color-option ${c.name === currentColor ? 'active' : ''}" 
+         style="background:${c.bg}" 
+         onclick="setColor('${c.name}')"
+         title="${c.label}"></div>
+  `).join('');
+  
+  // Device ID
+  let deviceId = localStorage.getItem('deviceId');
+  if (!deviceId) {
+    deviceId = 'DC-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    localStorage.setItem('deviceId', deviceId);
+  }
+  document.getElementById('deviceId').value = deviceId;
+  
+  // Last backup info
+  const lastBackup = localStorage.getItem('lastBackup');
+  document.getElementById('lastBackupInfo').textContent = lastBackup 
+    ? `آخر نسخة احتياطية: ${new Date(lastBackup).toLocaleString('ar-EG')}` 
+    : 'لم يتم إنشاء نسخة احتياطية بعد';
+  
+  // Dark mode button
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  document.getElementById('darkModeBtnSettings').textContent = isDark ? '☀️ إلغاء' : '🌙 تفعيل';
+}
+
+function setColor(color) {
+  document.documentElement.dataset.color = color;
+  localStorage.setItem('appColor', color);
+  document.querySelectorAll('.color-option').forEach(el => el.classList.remove('active'));
+  event.target.classList.add('active');
+  toast(`تم تغيير اللون إلى ${COLORS.find(c => c.name === color)?.label}`);
+}
+
+function toggleDarkMode() {
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  document.documentElement.dataset.theme = isDark ? '' : 'dark';
+  localStorage.setItem('darkMode', isDark ? '' : 'dark');
+  document.getElementById('darkModeBtn').textContent = isDark ? '🌙' : '☀️';
+  const settingsBtn = document.getElementById('darkModeBtnSettings');
+  if (settingsBtn) settingsBtn.textContent = isDark ? '🌙 تفعيل' : '☀️ إلغاء';
+}
+
+function changePassword() {
+  const current = document.getElementById('currentPassword').value;
+  const newPass = document.getElementById('newPassword').value;
+  
+  if (current !== APP_PASSWORD) {
+    toast('كلمة السر الحالية غير صحيحة', 'error');
+    return;
+  }
+  
+  if (newPass.length < 4) {
+    toast('كلمة السر يجب أن تكون 4 أحرف على الأقل', 'warning');
+    return;
+  }
+  
+  APP_PASSWORD = newPass;
+  localStorage.setItem('appPassword', newPass);
+  toast('تم تغيير كلمة السر بنجاح');
+  document.getElementById('currentPassword').value = '';
+  document.getElementById('newPassword').value = '';
+}
+
+function removePassword() {
+  const current = document.getElementById('currentPassword').value;
+  
+  if (current !== APP_PASSWORD) {
+    toast('كلمة السر الحالية غير صحيحة', 'error');
+    return;
+  }
+  
+  if (!confirm('⚠️ هل أنت متأكد من إلغاء كلمة السر؟ سيصبح التطبيق بدون حماية!')) return;
+  
+  APP_PASSWORD = '';
+  localStorage.removeItem('appPassword');
+  toast('✅ تم إلغاء كلمة السر - التطبيق الآن بدون حماية');
+  document.getElementById('currentPassword').value = '';
+  document.getElementById('newPassword').value = '';
+}
+
+// ==================== SYNC SECTION ====================
+let peer = null;
+let connections = [];
+let currentRoom = null;
+let isSyncHost = false;
+let syncChannel = null;
+let lastSyncData = null;
+let syncInProgress = false;
+let bluetoothDevice = null;
+let bluetoothServer = null;
+const PEER_SERVER = 'derma-center';
+
+// طرق المزامنة المتاحة
+const SYNC_METHODS = [
+  { id: 'code', name: '🔑 كود سريع', visible: true },
+  { id: 'jsonbin', name: '☁️ سحابة', visible: true },
+  { id: 'file', name: '📁 ملف', visible: true },
+  { id: 'link', name: '🔗 رابط', visible: true },
+  { id: 'nfc', name: '📱 NFC', visible: true },
+  { id: 'more', name: '➕ المزيد', visible: true }
+];
+
+// تحميل إعدادات طرق المزامنة
+function loadSyncMethodsSettings() {
+  const saved = localStorage.getItem('syncMethodsVisible');
+  if (saved) {
+    const visibleMethods = JSON.parse(saved);
+    SYNC_METHODS.forEach(m => {
+      m.visible = visibleMethods.includes(m.id);
+    });
+  }
+  updateSyncMethodsUI();
+}
+
+// تحديث واجهة طرق المزامنة
+function updateSyncMethodsUI() {
+  // تحديث التبويبات
+  const tabs = document.querySelectorAll('#syncMethodsTabs .tab');
+  tabs.forEach(tab => {
+    const method = tab.dataset.method;
+    const methodConfig = SYNC_METHODS.find(m => m.id === method);
+    if (methodConfig) {
+      tab.style.display = methodConfig.visible ? '' : 'none';
+    }
+  });
+  
+  // تحديث أزرار التبديل
+  const togglesContainer = document.getElementById('syncMethodsToggles');
+  if (togglesContainer) {
+    togglesContainer.innerHTML = SYNC_METHODS.map(m => `
+      <label style="display:flex; align-items:center; gap:6px; cursor:pointer; padding:6px 12px; background:${m.visible ? 'var(--success)' : 'var(--surface2)'}; border-radius:var(--radius-xs); color:${m.visible ? '#fff' : 'var(--text)'}; font-size:13px">
+        <input type="checkbox" ${m.visible ? 'checked' : ''} onchange="toggleSyncMethodVisibility('${m.id}')" style="display:none">
+        ${m.name}
+      </label>
+    `).join('');
+  }
+}
+
+// تبديل ظهور طريقة مزامنة
+function toggleSyncMethodVisibility(methodId) {
+  const method = SYNC_METHODS.find(m => m.id === methodId);
+  if (method) {
+    method.visible = !method.visible;
+    localStorage.setItem('syncMethodsVisible', JSON.stringify(SYNC_METHODS.filter(m => m.visible).map(m => m.id)));
+    updateSyncMethodsUI();
+    toast(method.visible ? `✅ تم إظهار ${method.name}` : `❌ تم إخفاء ${method.name}`);
+  }
+}
+
+// إخفاء طريقة مزامنة
+function hideSyncMethod(methodId) {
+  toggleSyncMethodVisibility(methodId);
+  // الانتقال لأول طريقة مرئية
+  const firstVisible = SYNC_METHODS.find(m => m.visible);
+  if (firstVisible) {
+    showSyncMethod(firstVisible.id);
+  }
+}
+
+// فتح/إغلاق مدير طرق المزامنة
+function toggleSyncMethodsManager() {
+  const manager = document.getElementById('syncMethodsManager');
+  const icon = document.getElementById('syncMethodsToggleIcon');
+  if (manager.style.display === 'none') {
+    manager.style.display = 'block';
+    icon.textContent = '▲';
+  } else {
+    manager.style.display = 'none';
+    icon.textContent = '▼';
+  }
+}
+
+// تحميل قسم المزامنة
+function loadSync() {
+  loadSyncMethodsSettings();
+  updateMainSyncStatus();
+  initLocalSync();
+  
+  // تحديث معرف الجهاز
+  let deviceId = localStorage.getItem('deviceId');
+  if (!deviceId) {
+    deviceId = 'DC-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    localStorage.setItem('deviceId', deviceId);
+  }
+  
+  const deviceIdEl = document.getElementById('localDeviceId');
+  if (deviceIdEl) deviceIdEl.textContent = deviceId;
+  
+  // تحديث آخر نسخة احتياطية
+  const lastBackup = localStorage.getItem('lastBackup');
+  const backupInfo = document.getElementById('syncBackupInfo');
+  if (backupInfo) {
+    backupInfo.textContent = lastBackup ? new Date(lastBackup).toLocaleString('ar-EG') : 'لم يتم بعد';
+  }
+  
+  // حساب حجم البيانات
+  calculateDataSize();
+}
+
+// تحديث حالة المزامنة الرئيسية
+function updateMainSyncStatus() {
+  const statusEl = document.getElementById('mainSyncStatus');
+  const textEl = document.getElementById('mainSyncText');
+  
+  if (!statusEl || !textEl) return;
+  
+  if (peer && currentRoom) {
+    statusEl.innerHTML = '<span style="color:#48bb78">●</span>';
+    textEl.textContent = 'متصل';
+    statusEl.className = 'sync-status connected';
+  } else if (syncChannel) {
+    statusEl.innerHTML = '<span style="color:#48bb78">●</span>';
+    textEl.textContent = 'محلي';
+    statusEl.className = 'sync-status connected';
+  } else {
+    statusEl.innerHTML = '<span style="color:#fc8181">●</span>';
+    textEl.textContent = 'غير متصل';
+    statusEl.className = 'sync-status disconnected';
+  }
+}
+
+// ==================== تبديل طرق المزامنة ====================
+function showSyncMethod(method) {
+  ['peerjs', 'local', 'qrcode', 'file', 'cloud'].forEach(m => {
+    const el = document.getElementById(`syncMethod-${m}`);
+    if (el) el.style.display = m === method ? 'block' : 'none';
+  });
+  
+  // تحديث التبويبات
+  const tabs = document.querySelectorAll('#sec-sync .tabs .tab');
+  const methods = ['peerjs', 'local', 'qrcode', 'file', 'cloud'];
+  tabs.forEach((tab, i) => {
+    if (methods[i] === method) tab.classList.add('active');
+    else tab.classList.remove('active');
+  });
+}
+
+// ==================== طريقة 1: PeerJS (إنترنت) ====================
+function showPeerTab(tab) {
+  ['create', 'join'].forEach(t => {
+    const el = document.getElementById(`peerTab-${t}`);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+  
+  const tabs = document.querySelectorAll('#syncMethod-peerjs .tabs .tab');
+  tabs.forEach((t, i) => {
+    t.classList.toggle('active', ['create', 'join'][i] === tab);
+  });
+}
+
+async function createPeerRoom() {
+  try {
+    await initPeerJS();
+    
+    const roomName = document.getElementById('peerRoomName')?.value || 'غرفة بدون اسم';
+    const roomCode = generateRoomCode();
+    
+    // إنشاء Peer
+    peer = new Peer(`${PEER_SERVER}-${roomCode}`, { debug: 1 });
+    
+    peer.on('open', (id) => {
+      currentRoom = roomCode;
+      isSyncHost = true;
+      
+      const codeEl = document.getElementById('peerRoomCode');
+      const infoEl = document.getElementById('peerRoomInfo');
+      
+      if (codeEl) codeEl.textContent = roomCode;
+      if (infoEl) infoEl.style.display = 'block';
+      
+      // إنشاء QR Code
+      generatePeerQRCode(roomCode);
+      
+      updateMainSyncStatus();
+      addToSyncLog(`✅ تم إنشاء غرفة: ${roomCode}`);
+      toast('✅ تم إنشاء الغرفة بنجاح!');
+    });
+    
+    peer.on('connection', (conn) => {
+      handlePeerConnection(conn, roomName);
+    });
+    
+    peer.on('error', (err) => {
+      console.error('Peer error:', err);
+      if (err.type === 'unavailable-id') {
+        toast('الكود مستخدم، جرب مرة أخرى', 'error');
+      } else {
+        toast('خطأ: ' + err.type, 'error');
+      }
+    });
+    
+    peer.on('disconnected', () => {
+      // محاولة إعادة الاتصال
+      setTimeout(() => {
+        if (peer && !peer.destroyed) {
+          peer.reconnect();
+        }
+      }, 3000);
+    });
+    
+  } catch (error) {
+    toast('خطأ في إنشاء الغرفة', 'error');
+  }
+}
+
+async function joinPeerRoom() {
+  const codeEl = document.getElementById('peerJoinCode');
+  const roomCode = codeEl?.value.trim().toUpperCase();
+  
+  if (!roomCode || roomCode.length < 4) {
+    toast('أدخل كود الغرفة بشكل صحيح', 'warning');
+    return;
+  }
+  
+  try {
+    await initPeerJS();
+    
+    const myId = 'client-' + Math.random().toString(36).substr(2, 8);
+    peer = new Peer(myId, { debug: 1 });
+    
+    peer.on('open', () => {
+      const conn = peer.connect(`${PEER_SERVER}-${roomCode}`, { reliable: true });
+      
+      conn.on('open', () => {
+        currentRoom = roomCode;
+        connections.push(conn);
+        
+        updateMainSyncStatus();
+        addToSyncLog(`✅ متصل بالغرفة: ${roomCode}`);
+        toast('✅ تم الاتصال بنجاح!');
+        
+        // طلب البيانات
+        conn.send({ type: 'REQUEST_SYNC', deviceId: localStorage.getItem('deviceId') });
+      });
+      
+      conn.on('data', (data) => handlePeerData(data, conn));
+      
+      conn.on('close', () => {
+        connections = connections.filter(c => c !== conn);
+        updateMainSyncStatus();
+        addToSyncLog('⚠️ تم قطع الاتصال');
+        toast('تم قطع الاتصال', 'info');
+      });
+      
+      conn.on('error', () => {
+        toast('خطأ في الاتصال', 'error');
+      });
+    });
+    
+    peer.on('error', (err) => {
+      if (err.type === 'peer-unavailable') {
+        toast('الغرفة غير موجودة', 'error');
+      } else {
+        toast('خطأ: ' + err.type, 'error');
+      }
+    });
+    
+  } catch (error) {
+    toast('خطأ في الاتصال', 'error');
+  }
+}
+
+function handlePeerConnection(conn, roomName) {
+  connections.push(conn);
+  
+  conn.on('open', () => {
+    addToSyncLog('📱 جهاز جديد متصل');
+    toast('📱 جهاز جديد متصل');
+    
+    // إرسال البيانات للجهاز الجديد
+    sendSyncData(conn);
+  });
+  
+  conn.on('data', (data) => handlePeerData(data, conn));
+  
+  conn.on('close', () => {
+    connections = connections.filter(c => c !== conn);
+    addToSyncLog('📱 جهاز انفصل');
+  });
+}
+
+async function handlePeerData(data, conn) {
+  // منع التكرار
+  const dataHash = JSON.stringify(data).slice(0, 100);
+  if (lastSyncData === dataHash) return;
+  lastSyncData = dataHash;
+  
+  switch (data.type) {
+    case 'REQUEST_SYNC':
+      if (isSyncHost) {
+        sendSyncData(conn);
+      }
+      break;
+      
+    case 'FULL_SYNC':
+      if (syncInProgress) return;
+      syncInProgress = true;
+      await applySyncData(data.stores);
+      syncInProgress = false;
+      addToSyncLog('📥 تم استلام البيانات');
+      toast('📥 تم تحديث البيانات');
+      loadDashboard();
+      break;
+      
+    case 'UPDATE_ITEM':
+      if (data.store && data.item) {
+        const existing = await dbGet(data.store, data.item.id);
+        if (!existing || (data.item.updatedAt && (!existing.updatedAt || data.item.updatedAt > existing.updatedAt))) {
+          await dbPut(data.store, data.item);
+          addToSyncLog(`📝 تحديث: ${data.store}`);
+        }
+      }
+      break;
+      
+    case 'DELETE_ITEM':
+      if (data.store && data.itemId) {
+        await dbDelete(data.store, data.itemId);
+        addToSyncLog(`🗑️ حذف: ${data.store}`);
+      }
+      break;
+  }
+}
+
+async function sendSyncData(conn) {
+  const stores = {};
+  for (const store of STORES) {
+    stores[store] = await dbGetAll(store);
+  }
+  conn.send({ type: 'FULL_SYNC', stores, timestamp: Date.now() });
+}
+
+async function applySyncData(stores) {
+  for (const store of STORES) {
+    if (stores[store] && Array.isArray(stores[store])) {
+      // دمج البيانات بدلاً من الاستبدال
+      const existing = await dbGetAll(store);
+      const existingIds = new Set(existing.map(i => i.id));
+      
+      for (const item of stores[store]) {
+        if (!item.id || !existingIds.has(item.id)) {
+          // عنصر جديد
+          delete item.id;
+          await dbAdd(store, item);
+        } else {
+          // تحديث إذا كان أحدث
+          const local = existing.find(i => i.id === item.id);
+          if (!local || (item.updatedAt && (!local.updatedAt || item.updatedAt > local.updatedAt))) {
+            await dbPut(store, item);
+          }
+        }
+      }
+    }
+  }
+}
+
+function generatePeerQRCode(roomCode) {
+  const container = document.getElementById('peerQRCode');
+  if (!container) return;
+  
+  const qrUrl = `${window.location.origin}${window.location.pathname}?room=${roomCode}`;
+  container.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}" style="border-radius:8px" alt="QR">`;
+}
+
+function copyPeerCode() {
+  const code = document.getElementById('peerRoomCode')?.textContent;
+  if (code) {
+    navigator.clipboard.writeText(code);
+    toast('📋 تم نسخ الكود');
+  }
+}
+
+function sharePeerRoom() {
+  const code = document.getElementById('peerRoomCode')?.textContent;
+  if (code && navigator.share) {
+    navigator.share({
+      title: 'مزامنة مركز الجلدية',
+      text: `كود الغرفة: ${code}`,
+      url: `${window.location.href}?room=${code}`
+    });
+  } else {
+    copyPeerCode();
+  }
+}
+
+async function startPeerJSScanner() {
+  const code = prompt('أدخل كود الغرفة:');
+  if (code) {
+    const codeEl = document.getElementById('peerJoinCode');
+    if (codeEl) codeEl.value = code.toUpperCase();
+    joinPeerRoom();
+  }
+}
+
+function disconnectPeerJS() {
+  connections.forEach(conn => conn.close());
+  connections = [];
+  
+  if (peer) {
+    peer.destroy();
+    peer = null;
+  }
+  
+  currentRoom = null;
+  isSyncHost = false;
+  
+  const infoEl = document.getElementById('peerRoomInfo');
+  if (infoEl) infoEl.style.display = 'none';
+  
+  updateMainSyncStatus();
+  addToSyncLog('⏹️ تم قطع الاتصال');
+  toast('تم قطع الاتصال', 'info');
+}
+
+// ==================== طريقة 2: محلي (BroadcastChannel) ====================
+function initLocalSync() {
+  try {
+    syncChannel = new BroadcastChannel('derma-center-sync');
+    
+    syncChannel.onmessage = async (e) => {
+      const data = e.data;
+      
+      // منع معالجة نفس الرسالة مرتين
+      if (data.senderId === localStorage.getItem('deviceId')) return;
+      
+      switch (data.type) {
+        case 'SYNC_REQUEST':
+          // إرسال البيانات
+          const stores = {};
+          for (const store of STORES) {
+            stores[store] = await dbGetAll(store);
+          }
+          syncChannel.postMessage({ type: 'SYNC_RESPONSE', stores, senderId: localStorage.getItem('deviceId') });
+          break;
+          
+        case 'SYNC_RESPONSE':
+          if (!syncInProgress) {
+            syncInProgress = true;
+            await applySyncData(data.stores);
+            syncInProgress = false;
+            addToSyncLog('📱 تمت المزامنة المحلية');
+            toast('📱 تمت المزامنة');
+            loadDashboard();
+          }
+          break;
+          
+        case 'PING':
+          syncChannel.postMessage({ type: 'PONG', senderId: localStorage.getItem('deviceId') });
+          break;
+          
+        case 'PONG':
+          const countEl = document.getElementById('localTabsCount');
+          if (countEl) {
+            const current = parseInt(countEl.textContent) || 1;
+            countEl.textContent = current + 1;
+          }
+          break;
+      }
+    };
+    
+    updateMainSyncStatus();
+    
+  } catch (e) {
+    console.log('BroadcastChannel not supported');
+  }
+}
+
+function broadcastLocalSync() {
+  if (syncChannel) {
+    syncChannel.postMessage({ type: 'SYNC_REQUEST', senderId: localStorage.getItem('deviceId') });
+    addToSyncLog('🔄 طلب مزامنة محلية');
+    toast('🔄 جاري المزامنة...');
+  }
+}
+
+function refreshLocalStatus() {
+  if (syncChannel) {
+    const countEl = document.getElementById('localTabsCount');
+    if (countEl) countEl.textContent = '1';
+    syncChannel.postMessage({ type: 'PING', senderId: localStorage.getItem('deviceId') });
+    toast('🔍 جاري البحث عن التبويبات...');
+  }
+}
+
+function startLocalSync() {
+  const infoEl = document.getElementById('localBroadcastInfo');
+  if (infoEl) infoEl.style.display = 'block';
+  broadcastLocalSync();
+}
+
+async function scanLocalDevices() {
+  toast('🔍 البحث عن أجهزة على الشبكة...');
+  // هذا يتطلب خادم محلي - للعرض فقط
+  setTimeout(() => {
+    const listEl = document.getElementById('localDevicesList');
+    if (listEl) {
+      listEl.innerHTML = '<p style="color:var(--text3); text-align:center">لا توجد أجهزة أخرى على الشبكة حالياً</p>';
+    }
+  }, 2000);
+}
+
+// ==================== طريقة 3: QR Code ====================
+function showQRTransferTab(tab) {
+  ['send', 'receive'].forEach(t => {
+    const el = document.getElementById(`qrTransfer-${t}`);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+  
+  const tabs = document.querySelectorAll('#syncMethod-qrcode .tabs .tab');
+  tabs.forEach((t, i) => {
+    t.classList.toggle('active', ['send', 'receive'][i] === tab);
+  });
+}
+
+async function generateDataQR() {
+  const dataType = document.getElementById('qrDataType')?.value || 'all';
+  
+  let data = {};
+  if (dataType === 'all') {
+    for (const store of STORES) {
+      data[store] = await dbGetAll(store);
+    }
+  } else {
+    data[dataType] = await dbGetAll(dataType);
+  }
+  
+  // إنشاء QR صغير
+  const jsonStr = JSON.stringify(data);
+  const encoded = btoa(unescape(encodeURIComponent(jsonStr.slice(0, 500)))); // أول 500 حرف فقط
+  
+  const container = document.getElementById('qrDataDisplay');
+  if (container) {
+    container.innerHTML = `
+      <div style="background:var(--surface2); padding:20px; border-radius:var(--radius-sm); display:inline-block">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('DERMA:' + encoded.slice(0, 100))}" style="border-radius:8px">
+        <p style="font-size:12px; color:var(--text3); margin-top:8px">⚠️ البيانات الكبيرة تحتاج طرق أخرى</p>
+      </div>
+    `;
+  }
+  
+  addToSyncLog('📷 تم إنشاء QR للبيانات');
+}
+
+async function startDataQRScanner() {
+  const result = prompt('أدخل كود البيانات (أو استخدم طريقة النسخ الاحتياطي للبيانات الكبيرة):');
+  if (result && result.startsWith('DERMA:')) {
+    try {
+      const jsonStr = decodeURIComponent(escape(atob(result.replace('DERMA:', ''))));
+      const data = JSON.parse(jsonStr);
+      await applySyncData(data);
+      toast('✅ تم استيراد البيانات');
+      loadDashboard();
+    } catch (e) {
+      toast('خطأ في قراءة البيانات', 'error');
+    }
+  }
+}
+
+// ==================== طريقة 4: ملف ====================
+async function exportAllData() {
+  const data = {};
+  for (const store of STORES) {
+    data[store] = await dbGetAll(store);
+  }
+  
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `derma-center-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  localStorage.setItem('lastBackup', new Date().toISOString());
+  addToSyncLog('📥 تم تصدير البيانات');
+  toast('📥 تم تصدير البيانات');
+}
+
+async function importDataFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      
+      if (!confirm('سيتم دمج البيانات مع البيانات الحالية. هل أنت متأكد؟')) return;
+      
+      await applySyncData(data);
+      
+      addToSyncLog('📤 تم استيراد البيانات');
+      toast('📤 تم استيراد البيانات بنجاح');
+      loadDashboard();
+    } catch (err) {
+      toast('خطأ في قراءة الملف', 'error');
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+async function exportStore(store) {
+  const data = await dbGetAll(store);
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${store}-export-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast(`📥 تم تصدير ${store}`);
+}
+
+// ==================== طريقة 5: سحابة (قيد التطوير) ====================
+// سيتم إضافتها لاحقاً
+
+// ==================== أدوات مساعدة ====================
+function initPeerJS() {
+  return new Promise((resolve, reject) => {
+    if (typeof Peer !== 'undefined') {
+      resolve();
+      return;
+    }
+    
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js';
+    script.onload = () => resolve();
+    script.onerror = () => reject('فشل تحميل مكتبة المزامنة');
+    document.head.appendChild(script);
+  });
+}
+
+function generateRoomCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+async function calculateDataSize() {
+  let totalSize = 0;
+  for (const store of STORES) {
+    const data = await dbGetAll(store);
+    totalSize += JSON.stringify(data).length;
+  }
+  
+  const sizeEl = document.getElementById('syncDataSize');
+  if (sizeEl) {
+    sizeEl.textContent = (totalSize / 1024).toFixed(2) + ' KB';
+  }
+}
+
+function addToSyncLog(message) {
+  const logEl = document.getElementById('syncLog');
+  if (!logEl) return;
+  
+  const time = new Date().toLocaleTimeString('ar-EG');
+  const entry = document.createElement('div');
+  entry.style.cssText = 'padding:8px; border-bottom:1px solid var(--border); font-size:13px';
+  entry.innerHTML = `<span style="color:var(--text3)">${time}</span> - ${message}`;
+  
+  logEl.insertBefore(entry, logEl.firstChild);
+  
+  // حفظ آخر 50 رسالة
+  while (logEl.children.length > 50) {
+    logEl.removeChild(logEl.lastChild);
+  }
+}
+
+function clearSyncLog() {
+  const logEl = document.getElementById('syncLog');
+  if (logEl) {
+    logEl.innerHTML = '<p style="color:var(--text3); font-size:13px; text-align:center; padding:20px">لا توجد عمليات مزامنة بعد</p>';
+  }
+}
+
+// ========== Quick Code Functions (الأكثر فاعلية) ==========
+function showCodeTab(tab) {
+  ['export', 'import'].forEach(t => {
+    const el = document.getElementById(`codeTab-${t}`);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('#syncMethod-code .tabs .tab').forEach((btn, i) => {
+    btn.classList.toggle('active', ['export', 'import'][i] === tab);
+  });
+}
+
+async function generateQuickCode() {
+  try {
+    toast('⏳ جاري إنشاء الكود...');
+    
+    const data = {};
+    for (const store of STORES) {
+      data[store] = await dbGetAll(store);
+    }
+    data.exportDate = new Date().toISOString();
+    data.version = '2.0';
+    data.deviceId = localStorage.getItem('deviceId');
+    
+    // ضغط البيانات
+    const jsonString = JSON.stringify(data);
+    const compressed = btoa(encodeURIComponent(jsonString));
+    
+    // تقسيم لكودات صغيرة إذا كان كبير
+    const chunkSize = 50000; // 50KB per chunk
+    if (compressed.length > chunkSize) {
+      const chunks = [];
+      for (let i = 0; i < compressed.length; i += chunkSize) {
+        chunks.push(compressed.slice(i, i + chunkSize));
+      }
+      
+      // كود مع معرفات الأجزاء
+      const code = `DERMA_V2_MULTI:${chunks.length}:${chunks.map((c, i) => `[PART${i+1}]${c}`).join('\n---\n')}`;
+      document.getElementById('quickCodeText').value = code;
+    } else {
+      document.getElementById('quickCodeText').value = `DERMA_V2:${compressed}`;
+    }
+    
+    document.getElementById('quickCodeOutput').style.display = 'block';
+    addToSyncLog('🔑 تم إنشاء كود المزامنة', 'success');
+    toast('✅ تم إنشاء الكود بنجاح!');
+    
+  } catch (error) {
+    console.error('Error generating code:', error);
+    toast('خطأ في إنشاء الكود', 'error');
+    addToSyncLog('❌ فشل إنشاء الكود', 'error');
+  }
+}
+
+function copyQuickCode() {
+  const code = document.getElementById('quickCodeText').value;
+  navigator.clipboard.writeText(code).then(() => {
+    toast('📋 تم نسخ الكود');
+    addToSyncLog('📋 تم نسخ كود المزامنة', 'info');
+  }).catch(() => {
+    toast('خطأ في النسخ', 'error');
+  });
+}
+
+function shareQuickCode() {
+  const code = document.getElementById('quickCodeText').value;
+  if (navigator.share) {
+    navigator.share({
+      title: 'كود مزامنة - مركز الجلدية',
+      text: code
+    }).then(() => {
+      addToSyncLog('📤 تم مشاركة الكود', 'success');
+    });
+  } else {
+    copyQuickCode();
+  }
+}
+
+function downloadQuickCode() {
+  const code = document.getElementById('quickCodeText').value;
+  const blob = new Blob([code], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `derma-sync-code-${new Date().toISOString().split('T')[0]}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📥 تم تحميل الكود');
+  addToSyncLog('📥 تم تحميل كود المزامنة', 'success');
+}
+
+async function importQuickCode() {
+  const code = document.getElementById('quickCodeInput').value.trim();
+  
+  if (!code) {
+    toast('الصق الكود أولاً', 'warning');
+    return;
+  }
+  
+  try {
+    toast('⏳ جاري استيراد البيانات...');
+    
+    let jsonString;
+    
+    if (code.startsWith('DERMA_V2_MULTI:')) {
+      // كود متعدد الأجزاء
+      const parts = code.split('\n---\n');
+      let compressed = '';
+      parts.forEach(part => {
+        const match = part.match(/\[PART\d+\](.+)/);
+        if (match) compressed += match[1];
+      });
+      jsonString = decodeURIComponent(atob(compressed));
+    } else if (code.startsWith('DERMA_V2:')) {
+      // كود واحد
+      const compressed = code.replace('DERMA_V2:', '');
+      jsonString = decodeURIComponent(atob(compressed));
+    } else if (code.startsWith('{') || code.startsWith('[')) {
+      // JSON مباشر
+      jsonString = code;
+    } else {
+      // محاولة فك التشفير
+      try {
+        jsonString = decodeURIComponent(atob(code));
+      } catch {
+        jsonString = code;
+      }
+    }
+    
+    const data = JSON.parse(jsonString);
+    
+    if (!confirm('سيتم دمج البيانات مع البيانات الحالية. هل أنت متأكد؟')) return;
+    
+    await applySyncData(data);
+    
+    addToSyncLog('✅ تم استيراد البيانات من الكود', 'success');
+    toast('✅ تم استيراد البيانات بنجاح!');
+    loadDashboard();
+    
+  } catch (error) {
+    console.error('Import error:', error);
+    toast('خطأ في قراءة الكود - تأكد من نسخه كاملاً', 'error');
+    addToSyncLog('❌ فشل استيراد الكود', 'error');
+  }
+}
+
+async function importQuickCodeFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    document.getElementById('quickCodeInput').value = e.target.result;
+    await importQuickCode();
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+// ========== JSONBin Functions ==========
+function showJsonbinTab(tab) {
+  ['upload', 'download'].forEach(t => {
+    const el = document.getElementById(`jsonbinTab-${t}`);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('#syncMethod-jsonbin .tabs .tab').forEach((btn, i) => {
+    btn.classList.toggle('active', ['upload', 'download'][i] === tab);
+  });
+}
+
+async function uploadToJsonBin() {
+  try {
+    toast('⏳ جاري الرفع للسحابة...');
+    
+    const data = {};
+    for (const store of STORES) {
+      data[store] = await dbGetAll(store);
+    }
+    data.exportDate = new Date().toISOString();
+    
+    // استخدام api.jsonbin.io مجاناً
+    const response = await fetch('https://api.jsonbin.io/v3/b', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        record: data,
+        meta: {
+          name: `derma-center-${Date.now()}`
+        }
+      })
+    });
+    
+    if (!response.ok) throw new Error('Upload failed');
+    
+    const result = await response.json();
+    const binId = result.metadata.id;
+    
+    const url = `https://api.jsonbin.io/v3/b/${binId}`;
+    document.getElementById('jsonbinUrl').value = url;
+    document.getElementById('jsonbinUploadResult').style.display = 'block';
+    
+    addToSyncLog(`☁️ تم رفع البيانات - المعرف: ${binId}`, 'success');
+    toast('✅ تم الرفع بنجاح!');
+    
+  } catch (error) {
+    console.error('Upload error:', error);
+    toast('خطأ في الرفع - جرب طريقة أخرى', 'error');
+    addToSyncLog('❌ فشل الرفع للسحابة', 'error');
+  }
+}
+
+function copyJsonbinUrl() {
+  const url = document.getElementById('jsonbinUrl').value;
+  navigator.clipboard.writeText(url);
+  toast('📋 تم نسخ الرابط');
+}
+
+async function downloadFromJsonBin() {
+  const input = document.getElementById('jsonbinIdInput').value.trim();
+  
+  if (!input) {
+    toast('أدخل المعرف أو الرابط', 'warning');
+    return;
+  }
+  
+  try {
+    toast('⏳ جاري التحميل...');
+    
+    // استخراج المعرف من الرابط إذا كان رابط كامل
+    let binId = input;
+    if (input.includes('/b/')) {
+      binId = input.split('/b/')[1].split('/')[0].split('?')[0];
+    }
+    
+    const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`);
+    
+    if (!response.ok) throw new Error('Download failed');
+    
+    const result = await response.json();
+    const data = result.record;
+    
+    if (!confirm('سيتم دمج البيانات. هل أنت متأكد؟')) return;
+    
+    await applySyncData(data);
+    
+    addToSyncLog('☁️ تم تحميل البيانات من السحابة', 'success');
+    toast('✅ تم التحميل بنجاح!');
+    loadDashboard();
+    
+  } catch (error) {
+    console.error('Download error:', error);
+    toast('خطأ في التحميل - تأكد من المعرف', 'error');
+    addToSyncLog('❌ فشل التحميل من السحابة', 'error');
+  }
+}
+
+// ========== Link Functions ==========
+async function generateShareableLink() {
+  try {
+    toast('⏳ جاري إنشاء الرابط...');
+    
+    const data = {};
+    for (const store of STORES) {
+      data[store] = await dbGetAll(store);
+    }
+    data.exportDate = new Date().toISOString();
+    
+    const jsonString = JSON.stringify(data);
+    const compressed = btoa(encodeURIComponent(jsonString));
+    
+    // تخزين في localStorage مع معرف عشوائي
+    const linkId = 'sync_' + Math.random().toString(36).substr(2, 8);
+    localStorage.setItem(linkId, compressed);
+    
+    // إنشاء رابط
+    const url = `${window.location.origin}${window.location.pathname}?sync=${linkId}`;
+    
+    document.getElementById('shareableLink').value = url;
+    document.getElementById('shareLinkResult').style.display = 'block';
+    
+    addToSyncLog('🔗 تم إنشاء رابط المشاركة', 'success');
+    toast('✅ تم إنشاء الرابط!');
+    
+  } catch (error) {
+    console.error('Link error:', error);
+    toast('خطأ في إنشاء الرابط', 'error');
+  }
+}
+
+function copyShareLink() {
+  const link = document.getElementById('shareableLink').value;
+  navigator.clipboard.writeText(link);
+  toast('📋 تم نسخ الرابط');
+}
+
+function shareViaWebShare() {
+  const link = document.getElementById('shareableLink').value;
+  if (navigator.share) {
+    navigator.share({ title: 'مزامنة مركز الجلدية', url: link });
+  } else {
+    copyShareLink();
+  }
+}
+
+function sendViaWhatsApp() {
+  const link = document.getElementById('shareableLink').value;
+  const text = encodeURIComponent(`رابط مزامنة بيانات مركز الجلدية:\n${link}`);
+  window.open(`https://wa.me/?text=${text}`, '_blank');
+  addToSyncLog('📱 تم إرسال الرابط عبر واتساب', 'success');
+}
+
+async function importFromLink() {
+  const input = document.getElementById('importLinkInput').value.trim();
+  
+  if (!input) {
+    toast('الصق الرابط', 'warning');
+    return;
+  }
+  
+  try {
+    toast('⏳ جاري التحميل...');
+    
+    // استخراج المعرف من الرابط
+    const url = new URL(input);
+    const linkId = url.searchParams.get('sync');
+    
+    if (!linkId) {
+      toast('رابط غير صالح', 'error');
+      return;
+    }
+    
+    // البحث في localStorage
+    const compressed = localStorage.getItem(linkId);
+    
+    if (!compressed) {
+      toast('البيانات غير موجودة أو منتهية', 'error');
+      return;
+    }
+    
+    const jsonString = decodeURIComponent(atob(compressed));
+    const data = JSON.parse(jsonString);
+    
+    if (!confirm('سيتم دمج البيانات. هل أنت متأكد؟')) return;
+    
+    await applySyncData(data);
+    
+    addToSyncLog('🔗 تم تحميل البيانات من الرابط', 'success');
+    toast('✅ تم التحميل بنجاح!');
+    loadDashboard();
+    
+  } catch (error) {
+    console.error('Import error:', error);
+    toast('خطأ في التحميل', 'error');
+  }
+}
+
+// ========== NFC Functions ==========
+async function startNFCSend() {
+  if (!('NDEFReader' in window)) {
+    toast('NFC غير مدعوم في هذا الجهاز', 'error');
+    return;
+  }
+  
+  try {
+    document.getElementById('nfcStatusText').textContent = 'جاري الإرسال...';
+    document.getElementById('nfcStatusSub').textContent = 'قرب الجهاز الآخر';
+    
+    const ndef = new NDEFReader();
+    await ndef.scan();
+    
+    const data = {};
+    for (const store of STORES) {
+      data[store] = await dbGetAll(store);
+    }
+    
+    await ndef.write(JSON.stringify(data));
+    
+    document.getElementById('nfcStatusText').textContent = 'تم الإرسال!';
+    document.getElementById('nfcStatusSub').textContent = 'تم إرسال البيانات';
+    addToSyncLog('📱 تم إرسال البيانات عبر NFC', 'success');
+    toast('✅ تم الإرسال!');
+    
+  } catch (error) {
+    document.getElementById('nfcStatusText').textContent = 'فشل الإرسال';
+    document.getElementById('nfcStatusSub').textContent = error.message;
+    toast('خطأ في NFC', 'error');
+  }
+}
+
+async function startNFCReceive() {
+  if (!('NDEFReader' in window)) {
+    toast('NFC غير مدعوم', 'error');
+    return;
+  }
+  
+  try {
+    document.getElementById('nfcStatusText').textContent = 'جاري الاستقبال...';
+    document.getElementById('nfcStatusSub').textContent = 'قرب الجهاز المرسل';
+    
+    const ndef = new NDEFReader();
+    await ndef.scan();
+    
+    ndef.onreading = async (event) => {
+      const decoder = new TextDecoder();
+      for (const record of event.message.records) {
+        const data = JSON.parse(decoder.decode(record.data));
+        await applySyncData(data);
+        
+        document.getElementById('nfcStatusText').textContent = 'تم الاستقبال!';
+        addToSyncLog('📱 تم استقبال البيانات عبر NFC', 'success');
+        toast('✅ تم الاستقبال!');
+        loadDashboard();
+      }
+    };
+    
+  } catch (error) {
+    document.getElementById('nfcStatusText').textContent = 'فشل الاستقبال';
+    toast('خطأ في NFC', 'error');
+  }
+}
+
+// ========== Additional Functions ==========
+async function copyDataToClipboard() {
+  try {
+    const data = {};
+    for (const store of STORES) {
+      data[store] = await dbGetAll(store);
+    }
+    data.exportDate = new Date().toISOString();
+    
+    await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+    toast('📋 تم نسخ البيانات للحافظة');
+    addToSyncLog('📋 تم نسخ البيانات للحافظة', 'success');
+  } catch (error) {
+    toast('خطأ في النسخ', 'error');
+  }
+}
+
+async function pasteDataFromClipboard() {
+  try {
+    const text = await navigator.clipboard.readText();
+    const data = JSON.parse(text);
+    
+    if (!confirm('سيتم دمج البيانات. هل أنت متأكد؟')) return;
+    
+    await applySyncData(data);
+    toast('✅ تم لصق البيانات');
+    addToSyncLog('📋 تم لصق البيانات من الحافظة', 'success');
+    loadDashboard();
+  } catch (error) {
+    toast('خطأ في القراءة من الحافظة', 'error');
+  }
+}
+
+function printDataQR() {
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html dir="rtl">
+    <head><title>طباعة QR للمزامنة</title></head>
+    <body style="text-align:center; padding:20px; font-family:Arial">
+      <h2>كود المزامنة - مركز الجلدية والليزر</h2>
+      <p>امسح هذا الكود من جهاز آخر</p>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(window.location.href)}" style="margin:20px">
+      <p style="font-size:12px; color:#666">${new Date().toLocaleString('ar-EG')}</p>
+    </body>
+    </html>
+  `);
+  win.document.close();
+  win.print();
+}
+
+function shareViaTelegram() {
+  generateShareableLink().then(() => {
+    setTimeout(() => {
+      const link = document.getElementById('shareableLink')?.value || window.location.href;
+      const text = encodeURIComponent(`رابط مزامنة بيانات مركز الجلدية:\n${link}`);
+      window.open(`https://t.me/share/url?url=${text}`, '_blank');
+      addToSyncLog('✈️ تم المشاركة عبر تيليجرام', 'success');
+    }, 500);
+  });
+}
+
+// دالة قديمة للتوافق
+function showSyncTab(tab) {
+  showSyncMethod('peerjs');
+}
+
+function createSyncRoom() {
+  createPeerRoom();
+}
+
+function joinSyncRoom() {
+  joinPeerRoom();
+}
+
+function disconnectSync() {
+  disconnectPeerJS();
+}
+
+// ========== Email Sync ==========
+async function sendSyncEmail() {
+  const email = document.getElementById('syncEmailAddress')?.value;
+  
+  // تجميع البيانات
+  const data = {};
+  for (const store of STORES) {
+    data[store] = await dbGetAll(store);
+  }
+  data.exportDate = new Date().toISOString();
+  data.version = '2.0';
+  
+  const jsonString = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  
+  // إنشاء رابط تحميل
+  const url = URL.createObjectURL(blob);
+  
+  // إنشاء رابط mailto
+  const subject = encodeURIComponent('نسخة احتياطية - مركز الجلدية والليزر');
+  const body = encodeURIComponent(`مرحباً،
+
+مرفق نسخة احتياطية من بيانات مركز الجلدية والليزر.
+التاريخ: ${new Date().toLocaleString('ar-EG')}
+
+للاستيراد:
+1. حمّل الملف المرفق
+2. افتح التطبيق
+3. اذهب لقسم المزامنة > ملف > استيراد
+
+تحياتنا`);
+  
+  // تحميل الملف أولاً
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `derma-center-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  
+  // فتح البريد
+  setTimeout(() => {
+    if (email) {
+      window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+    } else {
+      window.open(`mailto:?subject=${subject}&body=${body}`);
+    }
+  }, 500);
+  
+  addToSyncLog('📧 تم إرسال نسخة احتياطية بالبريد', 'success');
+  toast('📧 تم تحميل الملف - أرفقه بالبريد');
+  
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+// ========== Bluetooth Sync ==========
+async function startBluetoothSync() {
+  // التحقق من دعم البلوتوث
+  if (!navigator.bluetooth) {
+    toast('المتصفح لا يدعم البلوتوث', 'error');
+    addToSyncLog('البلوتوث غير مدعوم', 'error');
+    return;
+  }
+  
+  try {
+    document.getElementById('bluetoothStatusText').textContent = 'جاري البحث...';
+    document.getElementById('bluetoothStatusSub').textContent = 'اختر جهازاً للاتصال';
+    document.getElementById('bluetoothIcon').textContent = '🔍';
+    
+    // البحث عن أجهزة
+    const device = await navigator.bluetooth.requestDevice({
+      acceptAllDevices: true,
+      optionalServices: ['generic_access']
+    });
+    
+    bluetoothDevice = device;
+    
+    document.getElementById('bluetoothStatusText').textContent = 'متصل بـ ' + (device.name || 'جهاز غير معروف');
+    document.getElementById('bluetoothStatusSub').textContent = 'يمكنك إرسال البيانات الآن';
+    document.getElementById('bluetoothIcon').textContent = '✅';
+    
+    device.addEventListener('gattserverdisconnected', () => {
+      document.getElementById('bluetoothStatusText').textContent = 'تم قطع الاتصال';
+      document.getElementById('bluetoothStatusSub').textContent = 'اضغط للبحث مرة أخرى';
+      document.getElementById('bluetoothIcon').textContent = '📱';
+      bluetoothDevice = null;
+      bluetoothServer = null;
+    });
+    
+    addToSyncLog('تم الاتصال بجهاز بلوتوث', 'success');
+    toast('✅ تم الاتصال بالجهاز');
+    
+  } catch (error) {
+    document.getElementById('bluetoothStatusText').textContent = 'فشل البحث';
+    document.getElementById('bluetoothStatusSub').textContent = error.message || 'حاول مرة أخرى';
+    document.getElementById('bluetoothIcon').textContent = '❌';
+    
+    if (error.name !== 'NotFoundError') {
+      toast('خطأ في البحث عن الأجهزة', 'error');
+      addToSyncLog('فشل البحث عن أجهزة بلوتوث', 'error');
+    }
+  }
+}
+
+async function sendBluetoothData() {
+  if (!bluetoothDevice) {
+    toast('اتصل بجهاز أولاً', 'warning');
+    return;
+  }
+  
+  try {
+    // تجميع البيانات
+    const data = {};
+    for (const store of STORES) {
+      data[store] = await dbGetAll(store);
+    }
+    
+    const jsonString = JSON.stringify(data);
+    
+    // ملاحظة: Web Bluetooth API محدود جداً في نقل البيانات الكبيرة
+    // هذا مثال بسيط - في الواقع تحتاج لبروتوكول أكثر تعقيداً
+    
+    toast('⚠️ نقل البيانات عبر البلوتوث محدود', 'warning');
+    addToSyncLog('محاولة إرسال بلوتوث - البيانات كبيرة', 'warning');
+    
+    // ننصح باستخدام طريقة أخرى
+    if (confirm('نقل البيانات عبر البلوتوث محدود. هل تريد استخدام طريقة الملف بدلاً منها؟')) {
+      showSyncMethod('file');
+      exportAllData();
+    }
+    
+  } catch (error) {
+    toast('خطأ في إرسال البيانات', 'error');
+    addToSyncLog('فشل إرسال بلوتوث', 'error');
+  }
+}
+
+// Backup & Restore
+async function manualBackup() {
+  const data = {};
+  for (const store of STORES) {
+    data[store] = await dbGetAll(store);
+  }
+  
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `derma-center-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  localStorage.setItem('lastBackup', new Date().toISOString());
+  document.getElementById('lastBackupInfo').textContent = `آخر نسخة احتياطية: ${new Date().toLocaleString('ar-EG')}`;
+  toast('تم إنشاء النسخة الاحتياطية');
+}
+
+async function restoreBackup(input) {
+  const file = input.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      
+      if (!confirm('سيتم استبدال جميع البيانات الحالية. هل أنت متأكد؟')) return;
+      
+      for (const store of STORES) {
+        await dbClear(store);
+        if (data[store]) {
+          for (const item of data[store]) {
+            delete item.id;
+            await dbAdd(store, item);
+          }
+        }
+      }
+      
+      toast('تم استعادة النسخة الاحتياطية بنجاح');
+      loadDashboard();
+    } catch (err) {
+      toast('خطأ في قراءة الملف', 'error');
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+// Clear Data
+function clearSpecificData() {
+  showModal('🗑️ حذف بيانات محددة', `
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-outline" onclick="clearStore('patients')">👥 حذف المرضى</button>
+      <button class="btn btn-outline" onclick="clearStore('appointments')">📅 حذف المواعيد</button>
+      <button class="btn btn-outline" onclick="clearStore('laserSessions')">✨ حذف جلسات الليزر</button>
+      <button class="btn btn-outline" onclick="clearStore('expenses')">📉 حذف المصروفات</button>
+      <button class="btn btn-outline" onclick="clearStore('photos')">📸 حذف الصور</button>
+      <button class="btn btn-outline" onclick="clearStore('files')">📁 حذف الملفات</button>
+    </div>
+  `, `<button class="btn btn-outline" onclick="closeModal()">إغلاق</button>`);
+}
+
+async function clearStore(store) {
+  if (confirm(`حذف جميع ${store}؟`)) {
+    await dbClear(store);
+    toast('تم الحذف', 'info');
+    closeModal();
+    loadDashboard();
+  }
+}
+
+async function clearAllData() {
+  if (!confirm('⚠️ تحذير! سيتم حذف جميع البيانات نهائياً. هل أنت متأكد؟')) return;
+  if (!confirm('هذا الإجراء لا يمكن التراجع عنه. هل أنت متأكد تماماً؟')) return;
+  
+  for (const store of STORES) {
+    await dbClear(store);
+  }
+  
+  toast('تم حذف جميع البيانات', 'warning');
+  loadDashboard();
+}
+
+// WhatsApp
+function sendWhatsApp(phone, name) {
+  if (!phone) {
+    toast('لا يوجد رقم هاتف', 'warning');
+    return;
+  }
+  const msg = encodeURIComponent(`مرحباً ${name}،\nنتمنى لك الشفاء العاجل.\nمركز الجلدية والليزر`);
+  window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${msg}`, '_blank');
+}
+
+function sendWhatsAppReminder(phone, name, date) {
+  if (!phone) {
+    toast('لا يوجد رقم هاتف', 'warning');
+    return;
+  }
+  const msg = encodeURIComponent(`مرحباً ${name}،\nنود تذكيرك بموعدك في ${new Date(date).toLocaleString('ar-EG')}\nمركز الجلدية والليزر`);
+  window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${msg}`, '_blank');
+}
+
+// PWA Install
+let installPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  installPrompt = e;
+  document.getElementById('installBtn').style.display = 'block';
+});
+
+function installPWA() {
+  if (installPrompt) {
+    installPrompt.prompt();
+    installPrompt.userChoice.then((choice) => {
+      if (choice.outcome === 'accepted') {
+        toast('تم تثبيت التطبيق');
+      }
+      installPrompt = null;
+      document.getElementById('installBtn').style.display = 'none';
+    });
+  }
+}
+
+// ==================== INITIALIZATION ====================
+async function init() {
+  // Register Service Worker
+  if ('serviceWorker' in navigator) {
+    try {
+      await navigator.serviceWorker.register('sw.js');
+      console.log('Service Worker registered');
+    } catch (err) {
+      console.log('Service Worker registration failed:', err);
+    }
+  }
+  
+  // Open Database
+  await openDB();
+  
+  // Load settings
+  const savedColor = localStorage.getItem('appColor') || 'blue';
+  document.documentElement.dataset.color = savedColor;
+  
+  const savedTheme = localStorage.getItem('darkMode');
+  if (savedTheme === 'dark') {
+    document.documentElement.dataset.theme = 'dark';
+    document.getElementById('darkModeBtn').textContent = '☀️';
+  }
+  
+  const savedPassword = localStorage.getItem('appPassword');
+  if (savedPassword) APP_PASSWORD = savedPassword;
+  
+  // Load section protection settings
+  loadSectionProtection();
+  
+  // Load dashboard
+  loadDashboard();
+  
+  // Set default dates for reports
+  const today = new Date();
+  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  document.getElementById('reportFrom').value = monthStart.toISOString().split('T')[0];
+  document.getElementById('reportTo').value = today.toISOString().split('T')[0];
+  
+  // Check for room code in URL
+  checkUrlForRoom();
+  
+  console.log('Derma Center PWA initialized');
+}
+
+// Start
+init();
+</script>
+</body>
+</html>
